@@ -1,0 +1,27 @@
+# Cache e resultados de compilacao do Gradle
+.gradle/
+build/
+
+# Configuracao local do Android SDK
+local.properties
+
+# Configuracoes locais do IntelliJ IDEA
+.idea/
+*.iml
+
+# Ficheiros gerados pelo Android
+*.apk
+*.aab
+*.dex
+*.class
+.externalNativeBuild/
+.cxx/
+captures/
+
+# Chaves de assinatura
+*.jks
+*.keystore
+
+# Ficheiros auxiliares do Windows e macOS
+Thumbs.db
+.DS_Store
