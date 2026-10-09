@@ -1,6 +1,7 @@
 package com.campuslf.app.ui;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ListView;
 import com.campuslf.app.R;
@@ -37,5 +38,8 @@ public final class MainActivity extends Activity {
                 LocalDate.now().minusDays(1)));
 
         foundItemsList.setAdapter(new FoundItemAdapter(this, sampleItems));
+
+        findViewById(R.id.addItemButton).setOnClickListener(view ->
+                startActivity(new Intent(this, AddItemActivity.class)));
     }
 }

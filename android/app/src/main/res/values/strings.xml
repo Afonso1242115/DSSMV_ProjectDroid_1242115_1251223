@@ -4,4 +4,22 @@
     <string name="found_items">Found Items</string>
     <string name="empty_list">No items have been registered yet.</string>
     <string name="add_item">Add Item</string>
+    <string name="new_found_item">New Found Item</string>
+    <string name="title">Title</string>
+    <string name="description">Description</string>
+    <string name="category">Category</string>
+    <string name="location">Location</string>
+    <string name="found_date">Found Date</string>
+    <string name="choose_date">Choose Date</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="save_not_ready">Saving will be implemented in the next step.</string>
+
+    <string-array name="item_categories">
+        <item>Keys</item>
+        <item>Electronics</item>
+        <item>Clothing</item>
+        <item>Documents</item>
+        <item>Other</item>
+    </string-array>
 </resources>
