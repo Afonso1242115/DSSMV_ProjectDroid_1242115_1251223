@@ -1,5 +1,5 @@
 # DSSMV_ProjectDroid_1242115_1251223
-# Objetos Perdidos no Campus
+# Campus L&F
 
 Projeto desenvolvido no âmbito da unidade curricular de
 Desenvolvimento de Software e Sistemas Móveis (DSSMV),
