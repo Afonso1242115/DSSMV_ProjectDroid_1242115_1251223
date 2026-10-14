@@ -15,6 +15,11 @@
     <string name="cancel">Cancel</string>
     <string name="item_saved">Item saved successfully.</string>
     <string name="save_error">Unable to save the item.</string>
+    <string name="load_error">Unable to load the items.</string>
+    <plurals name="saved_item_count">
+        <item quantity="one">%d saved item</item>
+        <item quantity="other">%d saved items</item>
+    </plurals>
 
     <string-array name="item_categories">
         <item>Keys</item>
