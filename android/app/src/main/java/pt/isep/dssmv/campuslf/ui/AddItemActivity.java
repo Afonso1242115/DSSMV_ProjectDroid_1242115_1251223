@@ -5,14 +5,20 @@ import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 import com.campuslf.app.R;
+import com.campuslf.app.model.FoundItem;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 /** Formulário para registar um novo objeto encontrado. */
 public final class AddItemActivity extends Activity {
+    private EditText titleInput;
+    private EditText descriptionInput;
+    private EditText locationInput;
+    private Spinner categorySpinner;
     private LocalDate foundDate = LocalDate.now();
     private Button dateButton;
 
@@ -21,7 +27,11 @@ public final class AddItemActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_item);
 
-        Spinner categorySpinner = findViewById(R.id.categorySpinner);
+        titleInput = findViewById(R.id.titleInput);
+        descriptionInput = findViewById(R.id.descriptionInput);
+        locationInput = findViewById(R.id.locationInput);
+        categorySpinner = findViewById(R.id.categorySpinner);
+
         ArrayAdapter<CharSequence> categoryAdapter = ArrayAdapter.createFromResource(
                 this,
                 R.array.item_categories,
@@ -33,8 +43,7 @@ public final class AddItemActivity extends Activity {
         updateDateButton();
         dateButton.setOnClickListener(view -> openDatePicker());
 
-        findViewById(R.id.saveButton).setOnClickListener(view ->
-                Toast.makeText(this, R.string.save_not_ready, Toast.LENGTH_SHORT).show());
+        findViewById(R.id.saveButton).setOnClickListener(view -> validateForm());
         findViewById(R.id.cancelButton).setOnClickListener(view -> finish());
     }
 
@@ -54,5 +63,43 @@ public final class AddItemActivity extends Activity {
 
     private void updateDateButton() {
         dateButton.setText(foundDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+    }
+
+    private void validateForm() {
+        boolean valid = validateInput(
+                titleInput, "Title", 3, FoundItem.MAX_TITLE_LENGTH)
+                & validateInput(
+                descriptionInput, "Description", 5, FoundItem.MAX_DESCRIPTION_LENGTH)
+                & validateInput(
+                locationInput, "Location", 2, FoundItem.MAX_LOCATION_LENGTH);
+
+        if (!valid) {
+            return;
+        }
+
+        try {
+            new FoundItem(
+                    0,
+                    titleInput.getText().toString(),
+                    descriptionInput.getText().toString(),
+                    categorySpinner.getSelectedItem().toString(),
+                    locationInput.getText().toString(),
+                    foundDate);
+            Toast.makeText(this, R.string.form_valid, Toast.LENGTH_SHORT).show();
+        } catch (IllegalArgumentException exception) {
+            Toast.makeText(this, exception.getMessage(), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private boolean validateInput(EditText input, String fieldName,
+                                  int minLength, int maxLength) {
+        try {
+            FoundItem.validateText(input.getText().toString(), fieldName, minLength, maxLength);
+            input.setError(null);
+            return true;
+        } catch (IllegalArgumentException exception) {
+            input.setError(exception.getMessage());
+            return false;
+        }
     }
 }
