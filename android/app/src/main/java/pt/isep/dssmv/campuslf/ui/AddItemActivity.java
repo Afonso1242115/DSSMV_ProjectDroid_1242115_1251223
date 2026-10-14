@@ -9,6 +9,7 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 import com.campuslf.app.R;
+import com.campuslf.app.data.FoundItemRepository;
 import com.campuslf.app.model.FoundItem;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -21,12 +22,14 @@ public final class AddItemActivity extends Activity {
     private Spinner categorySpinner;
     private LocalDate foundDate = LocalDate.now();
     private Button dateButton;
+    private FoundItemRepository repository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_item);
 
+        repository = new FoundItemRepository(this);
         titleInput = findViewById(R.id.titleInput);
         descriptionInput = findViewById(R.id.descriptionInput);
         locationInput = findViewById(R.id.locationInput);
@@ -43,7 +46,7 @@ public final class AddItemActivity extends Activity {
         updateDateButton();
         dateButton.setOnClickListener(view -> openDatePicker());
 
-        findViewById(R.id.saveButton).setOnClickListener(view -> validateForm());
+        findViewById(R.id.saveButton).setOnClickListener(view -> saveItem());
         findViewById(R.id.cancelButton).setOnClickListener(view -> finish());
     }
 
@@ -65,7 +68,7 @@ public final class AddItemActivity extends Activity {
         dateButton.setText(foundDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
     }
 
-    private void validateForm() {
+    private void saveItem() {
         boolean valid = validateInput(
                 titleInput, "Title", 3, FoundItem.MAX_TITLE_LENGTH)
                 & validateInput(
@@ -78,14 +81,22 @@ public final class AddItemActivity extends Activity {
         }
 
         try {
-            new FoundItem(
+            FoundItem item = new FoundItem(
                     0,
                     titleInput.getText().toString(),
                     descriptionInput.getText().toString(),
                     categorySpinner.getSelectedItem().toString(),
                     locationInput.getText().toString(),
                     foundDate);
-            Toast.makeText(this, R.string.form_valid, Toast.LENGTH_SHORT).show();
+
+            long id = repository.add(item);
+            if (id == -1) {
+                Toast.makeText(this, R.string.save_error, Toast.LENGTH_LONG).show();
+                return;
+            }
+
+            Toast.makeText(this, R.string.item_saved, Toast.LENGTH_SHORT).show();
+            finish();
         } catch (IllegalArgumentException exception) {
             Toast.makeText(this, exception.getMessage(), Toast.LENGTH_LONG).show();
         }
