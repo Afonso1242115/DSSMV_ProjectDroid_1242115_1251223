@@ -13,7 +13,7 @@
     <string name="choose_date">Choose Date</string>
     <string name="save">Save</string>
     <string name="cancel">Cancel</string>
-    <string name="save_not_ready">Saving will be implemented in the next step.</string>
+    <string name="form_valid">The form is valid. Local storage will be added next.</string>
 
     <string-array name="item_categories">
         <item>Keys</item>
