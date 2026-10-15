@@ -1,17 +1,19 @@
-package com.campuslf.app.ui;
+package pt.isep.dssmv.campuslf.ui;
 
 import android.app.Activity;
 import android.os.Bundle;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.campuslf.app.R;
-import com.campuslf.app.data.FoundItemRepository;
-import com.campuslf.app.model.FoundItem;
+
 import java.time.format.DateTimeFormatter;
+
+import pt.isep.dssmv.campuslf.R;
+import pt.isep.dssmv.campuslf.data.FoundItemRepository;
+import pt.isep.dssmv.campuslf.model.FoundItem;
 
 /** Mostra todos os dados do objeto selecionado. */
 public final class ItemDetailsActivity extends Activity {
-    public static final String EXTRA_ITEM_ID = "com.campuslf.app.FOUND_ITEM_ID";
+    public static final String EXTRA_ITEM_ID = "pt.isep.dssmv.campuslf.FOUND_ITEM_ID";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
