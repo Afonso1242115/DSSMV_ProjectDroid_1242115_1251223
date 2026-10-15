@@ -1,6 +1,5 @@
 package pt.isep.dssmv.campuslf.ui;
 
-import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
@@ -13,25 +12,23 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 import pt.isep.dssmv.campuslf.R;
-import pt.isep.dssmv.campuslf.data.FoundItemRepository;
 import pt.isep.dssmv.campuslf.model.FoundItem;
 
 /** Formulário para registar um novo objeto encontrado. */
-public final class AddItemActivity extends Activity {
+public final class AddItemActivity extends BaseActivity {
     private EditText titleInput;
     private EditText descriptionInput;
     private EditText locationInput;
     private Spinner categorySpinner;
     private LocalDate foundDate = LocalDate.now();
     private Button dateButton;
-    private FoundItemRepository repository;
+    private Button saveButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_item);
 
-        repository = new FoundItemRepository(this);
         titleInput = findViewById(R.id.titleInput);
         descriptionInput = findViewById(R.id.descriptionInput);
         locationInput = findViewById(R.id.locationInput);
@@ -48,7 +45,8 @@ public final class AddItemActivity extends Activity {
         updateDateButton();
         dateButton.setOnClickListener(view -> openDatePicker());
 
-        findViewById(R.id.saveButton).setOnClickListener(view -> saveItem());
+        saveButton = findViewById(R.id.saveButton);
+        saveButton.setOnClickListener(view -> saveItem());
         findViewById(R.id.cancelButton).setOnClickListener(view -> finish());
     }
 
@@ -83,26 +81,36 @@ public final class AddItemActivity extends Activity {
             return;
         }
 
+        final FoundItem item;
         try {
-            FoundItem item = new FoundItem(
+            item = new FoundItem(
                     0,
                     titleInput.getText().toString(),
                     descriptionInput.getText().toString(),
                     categorySpinner.getSelectedItem().toString(),
                     locationInput.getText().toString(),
                     foundDate);
+        } catch (IllegalArgumentException exception) {
+            Toast.makeText(this, exception.getMessage(), Toast.LENGTH_LONG).show();
+            return;
+        }
 
-            long id = repository.add(item);
+        setFormEnabled(false);
+        saveButton.setText(R.string.saving);
+
+        runAsync(() -> repository.add(item), id -> {
             if (id == -1) {
+                setFormEnabled(true);
                 Toast.makeText(this, R.string.save_error, Toast.LENGTH_LONG).show();
                 return;
             }
 
             Toast.makeText(this, R.string.item_saved, Toast.LENGTH_SHORT).show();
             finish();
-        } catch (IllegalArgumentException exception) {
-            Toast.makeText(this, exception.getMessage(), Toast.LENGTH_LONG).show();
-        }
+        }, exception -> {
+            setFormEnabled(true);
+            Toast.makeText(this, R.string.save_error, Toast.LENGTH_LONG).show();
+        });
     }
 
     private boolean validateInput(EditText input, String fieldName,
@@ -114,6 +122,18 @@ public final class AddItemActivity extends Activity {
         } catch (IllegalArgumentException exception) {
             input.setError(exception.getMessage());
             return false;
+        }
+    }
+
+    private void setFormEnabled(boolean enabled) {
+        titleInput.setEnabled(enabled);
+        descriptionInput.setEnabled(enabled);
+        locationInput.setEnabled(enabled);
+        categorySpinner.setEnabled(enabled);
+        dateButton.setEnabled(enabled);
+        saveButton.setEnabled(enabled);
+        if (enabled) {
+            saveButton.setText(R.string.save);
         }
     }
 }
