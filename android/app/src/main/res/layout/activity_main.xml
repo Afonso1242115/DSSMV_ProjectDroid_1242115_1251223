@@ -6,11 +6,8 @@
               android:padding="24dp">
 
     <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/found_items"
-            android:textSize="28sp"
-            android:textStyle="bold" />
+            style="@style/ScreenTitle"
+            android:text="@string/found_items" />
 
     <TextView
             android:id="@+id/statusText"
@@ -42,9 +39,7 @@
 
     <Button
             android:id="@+id/addItemButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            style="@style/PrimaryButton"
             android:text="@string/add_item" />
 
 </LinearLayout>
