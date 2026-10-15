@@ -1,5 +1,5 @@
-package com.campuslf.app.ui;
-import pt.isep.dssmv.campuslf.R;
+package pt.isep.dssmv.campuslf.ui;
+
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.os.Bundle;
@@ -8,10 +8,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
-import com.campuslf.app.data.FoundItemRepository;
-import com.campuslf.app.model.FoundItem;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+
+import pt.isep.dssmv.campuslf.R;
+import pt.isep.dssmv.campuslf.data.FoundItemRepository;
+import pt.isep.dssmv.campuslf.model.FoundItem;
 
 /** Formulário para registar um novo objeto encontrado. */
 public final class AddItemActivity extends Activity {
@@ -59,6 +62,7 @@ public final class AddItemActivity extends Activity {
                 foundDate.getYear(),
                 foundDate.getMonthValue() - 1,
                 foundDate.getDayOfMonth());
+
         dialog.getDatePicker().setMaxDate(System.currentTimeMillis());
         dialog.show();
     }
