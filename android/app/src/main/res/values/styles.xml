@@ -1,7 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Campus L&amp;F</string>
-    <string name="found_items">Found Items</string>
-    <string name="empty_list">No items have been registered yet.</string>
-    <string name="add_item">Add Item</string>
+
+    <style name="Theme.CampusLF"
+           parent="@android:style/Theme.Material.Light.NoActionBar">
+
+        <item name="android:colorAccent">#1565C0</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:statusBarColor">#FAFAFA</item>
+        <item name="android:navigationBarColor">#FAFAFA</item>
+        <item name="android:windowBackground">#FAFAFA</item>
+
+    </style>
+
 </resources>

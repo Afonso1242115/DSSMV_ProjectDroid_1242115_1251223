@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-    namespace = 'pt.isep.dssmv.lostandfound'
+    namespace = 'pt.isep.dssmv.campuslf'
     compileSdk = 35
 
     defaultConfig {
-        applicationId = 'pt.isep.dssmv.lostandfound'
+        applicationId = 'pt.isep.dssmv.campuslf'
         minSdk = 26
         targetSdk = 35
         versionCode = 1
@@ -19,5 +19,3 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 }
-
-// No external runtime dependencies are required at this stage.
