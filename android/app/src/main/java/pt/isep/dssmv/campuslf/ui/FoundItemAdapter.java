@@ -1,4 +1,4 @@
-package com.campuslf.app.ui;
+package pt.isep.dssmv.campuslf.ui;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -6,10 +6,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
-import com.campuslf.app.R;
-import com.campuslf.app.model.FoundItem;
+
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+
+import pt.isep.dssmv.campuslf.R;
+import pt.isep.dssmv.campuslf.model.FoundItem;
 
 /** Adapta objetos FoundItem para as linhas da ListView. */
 public final class FoundItemAdapter extends ArrayAdapter<FoundItem> {

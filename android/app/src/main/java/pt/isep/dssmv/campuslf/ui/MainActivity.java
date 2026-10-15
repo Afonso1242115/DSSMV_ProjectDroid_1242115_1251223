@@ -1,4 +1,4 @@
-package com.campuslf.app.ui;
+package pt.isep.dssmv.campuslf.ui;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -6,11 +6,13 @@ import android.os.Bundle;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.campuslf.app.R;
-import com.campuslf.app.data.FoundItemRepository;
-import com.campuslf.app.model.FoundItem;
+
 import java.util.ArrayList;
 import java.util.List;
+
+import pt.isep.dssmv.campuslf.R;
+import pt.isep.dssmv.campuslf.data.FoundItemRepository;
+import pt.isep.dssmv.campuslf.model.FoundItem;
 
 /** Ecrã principal da aplicação. */
 public final class MainActivity extends Activity {

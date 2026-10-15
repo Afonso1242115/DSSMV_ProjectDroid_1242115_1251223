@@ -1,4 +1,4 @@
-package com.campuslf.app.model;
+package pt.isep.dssmv.campuslf.model;
 
 import java.time.LocalDate;
 

@@ -1,14 +1,16 @@
-package com.campuslf.app.data;
+package pt.isep.dssmv.campuslf.data;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import com.campuslf.app.model.FoundItem;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+
+import pt.isep.dssmv.campuslf.model.FoundItem;
 
 /** Persistência local temporária enquanto a API ainda não está implementada. */
 public final class FoundItemRepository {
