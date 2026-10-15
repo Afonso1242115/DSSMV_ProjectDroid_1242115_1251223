@@ -10,11 +10,8 @@
             android:padding="24dp">
 
         <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/new_found_item"
-                android:textSize="28sp"
-                android:textStyle="bold" />
+                style="@style/ScreenTitle"
+                android:text="@string/new_found_item" />
 
         <EditText
                 android:id="@+id/titleInput"
@@ -46,11 +43,8 @@
                 android:inputType="textCapWords" />
 
         <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="@string/found_date"
-                android:textStyle="bold" />
+                style="@style/FieldLabel"
+                android:text="@string/found_date" />
 
         <Button
                 android:id="@+id/dateButton"
@@ -60,8 +54,7 @@
 
         <Button
                 android:id="@+id/saveButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                style="@style/PrimaryButton"
                 android:layout_marginTop="24dp"
                 android:text="@string/save" />
 
