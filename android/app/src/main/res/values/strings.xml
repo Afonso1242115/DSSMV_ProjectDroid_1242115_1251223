@@ -5,6 +5,7 @@
     <string name="empty_list">No items have been registered yet.</string>
     <string name="add_item">Add Item</string>
     <string name="new_found_item">New Found Item</string>
+    <string name="item_details">Item Details</string>
     <string name="title">Title</string>
     <string name="description">Description</string>
     <string name="category">Category</string>
@@ -13,9 +14,11 @@
     <string name="choose_date">Choose Date</string>
     <string name="save">Save</string>
     <string name="cancel">Cancel</string>
+    <string name="back">Back</string>
     <string name="item_saved">Item saved successfully.</string>
     <string name="save_error">Unable to save the item.</string>
     <string name="load_error">Unable to load the items.</string>
+    <string name="item_not_found">Item not found.</string>
     <plurals name="saved_item_count">
         <item quantity="one">%d saved item</item>
         <item quantity="other">%d saved items</item>

@@ -34,6 +34,17 @@ public final class MainActivity extends Activity {
 
         findViewById(R.id.addItemButton).setOnClickListener(view ->
                 startActivity(new Intent(this, AddItemActivity.class)));
+
+        foundItemsList.setOnItemClickListener((parent, view, position, id) -> {
+            FoundItem item = itemAdapter.getItem(position);
+            if (item == null) {
+                return;
+            }
+
+            Intent intent = new Intent(this, ItemDetailsActivity.class);
+            intent.putExtra(ItemDetailsActivity.EXTRA_ITEM_ID, item.getId());
+            startActivity(intent);
+        });
     }
 
     @Override
