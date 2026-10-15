@@ -1,6 +1,5 @@
 package pt.isep.dssmv.campuslf.ui;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -8,11 +7,9 @@ import android.widget.Toast;
 import java.time.format.DateTimeFormatter;
 
 import pt.isep.dssmv.campuslf.R;
-import pt.isep.dssmv.campuslf.data.FoundItemRepository;
-import pt.isep.dssmv.campuslf.model.FoundItem;
 
 /** Mostra todos os dados do objeto selecionado. */
-public final class ItemDetailsActivity extends Activity {
+public final class ItemDetailsActivity extends BaseActivity {
     public static final String EXTRA_ITEM_ID = "pt.isep.dssmv.campuslf.FOUND_ITEM_ID";
 
     @Override
@@ -28,19 +25,22 @@ public final class ItemDetailsActivity extends Activity {
             return;
         }
 
-        FoundItemRepository repository = new FoundItemRepository(this);
-        FoundItem item = repository.getById(itemId);
-        if (item == null) {
-            showNotFound();
-            return;
-        }
+        runAsync(() -> repository.getById(itemId), item -> {
+            if (item == null) {
+                showNotFound();
+                return;
+            }
 
-        setText(R.id.titleText, item.getTitle());
-        setText(R.id.descriptionText, item.getDescription());
-        setText(R.id.categoryText, item.getCategory());
-        setText(R.id.locationText, item.getFoundLocation());
-        setText(R.id.dateText, item.getFoundDate().format(
-                DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+            setText(R.id.titleText, item.getTitle());
+            setText(R.id.descriptionText, item.getDescription());
+            setText(R.id.categoryText, item.getCategory());
+            setText(R.id.locationText, item.getFoundLocation());
+            setText(R.id.dateText, item.getFoundDate().format(
+                    DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+        }, exception -> {
+            Toast.makeText(this, R.string.load_error, Toast.LENGTH_LONG).show();
+            finish();
+        });
     }
 
     private void setText(int viewId, String value) {
