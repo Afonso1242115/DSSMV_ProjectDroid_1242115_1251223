@@ -14,5 +14,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = 'CampusLostAndFound'
+rootProject.name = "CampusLF"
+
 include ':app'
+project(':app').projectDir = file('android/app')
