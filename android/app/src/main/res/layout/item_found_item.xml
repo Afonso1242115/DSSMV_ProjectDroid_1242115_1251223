@@ -7,27 +7,18 @@
 
     <TextView
             android:id="@+id/itemTitleText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="18sp"
-            android:textStyle="bold" />
+            style="@style/ListItemTitle" />
 
     <TextView
             android:id="@+id/itemCategoryText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp" />
+            style="@style/ListItemText" />
 
     <TextView
             android:id="@+id/itemLocationText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp" />
+            style="@style/ListItemText" />
 
     <TextView
             android:id="@+id/itemDateText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp" />
+            style="@style/ListItemText" />
 
 </LinearLayout>
