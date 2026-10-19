@@ -2,20 +2,47 @@ plugins {
     id 'com.android.application'
 }
 
+// Keep the development API key out of Git. The key is still extractable from
+// a compiled APK: grant it only the minimal permissions required for this demo.
+def localConfig = new Properties()
+def localFile = rootProject.file('local.properties')
+if (localFile.exists()) {
+    localFile.withInputStream { stream -> localConfig.load(stream) }
+}
+def baseUrl = localConfig.getProperty('restdb.url', 'https://example.restdb.io/').trim()
+def apiKey = localConfig.getProperty('restdb.apiKey', '').trim()
+if (!baseUrl.endsWith('/')) baseUrl += '/'
+def escaped = { value -> value.replace('\\','\\\\').replace('"','\\"') }
+
 android {
-    namespace = 'pt.isep.dssmv.campuslf'
-    compileSdk = 35
+    namespace 'pt.isep.dssmv.campuslf'
+    compileSdk 35
 
     defaultConfig {
-        applicationId = 'pt.isep.dssmv.campuslf'
-        minSdk = 26
-        targetSdk = 35
-        versionCode = 1
-        versionName = '0.1-local'
+        applicationId 'pt.isep.dssmv.campuslf'
+        minSdk 26
+        targetSdk 34
+        versionCode 3
+        versionName '0.3.0'
+        buildConfigField 'String', 'RESTDB_BASE_URL', '"' + escaped(baseUrl) + '"'
+        buildConfigField 'String', 'RESTDB_API_KEY', '"' + escaped(apiKey) + '"'
     }
-
+    buildTypes {
+        release { minifyEnabled false }
+    }
+    buildFeatures { buildConfig true }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
+}
+
+dependencies {
+    implementation 'androidx.appcompat:appcompat:1.7.1'
+    implementation 'androidx.activity:activity:1.10.1'
+    implementation 'androidx.core:core:1.15.0'
+    implementation 'androidx.recyclerview:recyclerview:1.4.0'
+    implementation 'com.squareup.retrofit2:retrofit:2.11.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.11.0'
+    implementation 'com.github.bumptech.glide:glide:4.16.0'
 }
