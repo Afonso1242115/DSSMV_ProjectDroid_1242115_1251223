@@ -1,18 +1,38 @@
+
 plugins {
     id 'com.android.application'
 }
 
-// Keep the development API key out of Git. The key is still extractable from
-// a compiled APK: grant it only the minimal permissions required for this demo.
-def localConfig = new Properties()
-def localFile = rootProject.file('local.properties')
-if (localFile.exists()) {
-    localFile.withInputStream { stream -> localConfig.load(stream) }
+// RestDB configuration is read from local.properties (not committed).
+// A restricted API key embedded in an APK can still be extracted.
+def restdbProperties = new Properties()
+def restdbLocalFile = rootProject.file('local.properties')
+
+if (restdbLocalFile.exists()) {
+    restdbLocalFile.withInputStream { stream ->
+        restdbProperties.load(stream)
+    }
 }
-def baseUrl = localConfig.getProperty('restdb.url', 'https://example.restdb.io/').trim()
-def apiKey = localConfig.getProperty('restdb.apiKey', '').trim()
-if (!baseUrl.endsWith('/')) baseUrl += '/'
-def escaped = { value -> value.replace('\\','\\\\').replace('"','\\"') }
+
+def restdbBaseUrl = restdbProperties.getProperty(
+        'restdb.url', 'https://example.restdb.io/'
+).trim()
+
+def restdbApiKey = restdbProperties.getProperty(
+        'restdb.apiKey', ''
+).trim()
+
+if (!restdbBaseUrl.endsWith('/')) {
+    restdbBaseUrl += '/'
+}
+
+if (!restdbBaseUrl.startsWith('https://')) {
+    throw new GradleException('restdb.url must use HTTPS')
+}
+
+def javaString = { String value ->
+    groovy.json.JsonOutput.toJson(value)
+}
 
 android {
     namespace 'pt.isep.dssmv.campuslf'
@@ -24,13 +44,23 @@ android {
         targetSdk 34
         versionCode 3
         versionName '0.3.0'
-        buildConfigField 'String', 'RESTDB_BASE_URL', '"' + escaped(baseUrl) + '"'
-        buildConfigField 'String', 'RESTDB_API_KEY', '"' + escaped(apiKey) + '"'
+
+        buildConfigField 'String', 'RESTDB_BASE_URL',
+                javaString(restdbBaseUrl)
+        buildConfigField 'String', 'RESTDB_API_KEY',
+                javaString(restdbApiKey)
     }
+
     buildTypes {
-        release { minifyEnabled false }
+        release {
+            minifyEnabled false
+        }
     }
-    buildFeatures { buildConfig true }
+
+    buildFeatures {
+        buildConfig true
+    }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
@@ -42,7 +72,9 @@ dependencies {
     implementation 'androidx.activity:activity:1.10.1'
     implementation 'androidx.core:core:1.15.0'
     implementation 'androidx.recyclerview:recyclerview:1.4.0'
+
     implementation 'com.squareup.retrofit2:retrofit:2.11.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.11.0'
+
     implementation 'com.github.bumptech.glide:glide:4.16.0'
 }
