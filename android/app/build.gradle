@@ -2,6 +2,21 @@ plugins {
     id 'com.android.application'
 }
 
+// RestDB configuration is read from local.properties (not committed).
+// A restricted API key embedded in an APK can still be extracted.
+def restdbProperties = new Properties()
+def restdbLocalFile = rootProject.file('local.properties')
+if (restdbLocalFile.exists()) {
+    restdbLocalFile.withInputStream { stream -> restdbProperties.load(stream) }
+}
+def restdbBaseUrl = restdbProperties.getProperty('restdb.url', 'https://example.restdb.io/').trim()
+def restdbApiKey = restdbProperties.getProperty('restdb.apiKey', '').trim()
+if (!restdbBaseUrl.endsWith('/')) restdbBaseUrl += '/'
+if (!restdbBaseUrl.startsWith('https://')) {
+    throw new GradleException('restdb.url must use HTTPS')
+}
+def javaString = { String value -> groovy.json.JsonOutput.toJson(value) }
+
 android {
     namespace = 'pt.isep.dssmv.campuslf'
     compileSdk = 35
@@ -12,10 +27,21 @@ android {
         targetSdk = 35
         versionCode = 1
         versionName = '0.1-local'
+        buildConfigField 'String', 'RESTDB_BASE_URL', javaString(restdbBaseUrl)
+        buildConfigField 'String', 'RESTDB_API_KEY', javaString(restdbApiKey)
+    }
+
+    buildFeatures {
+        buildConfig = true
     }
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
+}
+
+dependencies {
+    implementation 'com.squareup.retrofit2:retrofit:2.11.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.11.0'
 }
