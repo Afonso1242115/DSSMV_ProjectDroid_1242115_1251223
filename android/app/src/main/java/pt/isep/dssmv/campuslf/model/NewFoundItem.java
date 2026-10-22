@@ -6,15 +6,17 @@ import java.util.List;
 
 /** JSON sent to POST /rest/founditems. */
 public final class NewFoundItem {
-    private final String title;
-    private final String description;
-    @SerializedName("detailed_location") private final String detailedLocation;
-    @SerializedName("found_date") private final String foundDate;
-    private final List<String> building;
-    private final List<String> category;
-    private final List<String> photos;
-    private final Double latitude;
-    private final Double longitude;
+    private String title;
+    private String description;
+    @SerializedName("detailed_location") private String detailedLocation;
+    @SerializedName("found_date") private String foundDate;
+    private List<String> building;
+    private List<String> category;
+    private List<String> photos;
+    private Double latitude;
+    private Double longitude;
+
+    public NewFoundItem() { }
 
     public NewFoundItem(String title, String description, String detailedLocation,
                         String foundDate, String buildingId, String categoryId,
@@ -29,4 +31,22 @@ public final class NewFoundItem {
         this.latitude = latitude;
         this.longitude = longitude;
     }
+    public String getTitle() { return title; }
+    public String getDescription() { return description; }
+    public String getDetailedLocation() { return detailedLocation; }
+    public String getFoundDate() { return foundDate; }
+    public List<String> getBuilding() { return building; }
+    public List<String> getCategory() { return category; }
+    public List<String> getPhotos() { return photos; }
+    public Double getLatitude() { return latitude; }
+    public Double getLongitude() { return longitude; }
+    public void setTitle(String value) { title = value; }
+    public void setDescription(String value) { description = value; }
+    public void setDetailedLocation(String value) { detailedLocation = value; }
+    public void setFoundDate(String value) { foundDate = value; }
+    public void setBuilding(List<String> value) { building = value; }
+    public void setCategory(List<String> value) { category = value; }
+    public void setPhotos(List<String> value) { photos = value; }
+    public void setLatitude(Double value) { latitude = value; }
+    public void setLongitude(Double value) { longitude = value; }
 }
