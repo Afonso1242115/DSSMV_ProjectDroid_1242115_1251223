@@ -33,4 +33,10 @@
         <item>Documents</item>
         <item>Other</item>
     </string-array>
+    <string name="building">Building</string>
+    <string name="all_buildings">All buildings</string>
+    <string name="all_categories">All categories</string>
+    <string name="refresh">Refresh</string>
+    <string name="object_photo">Photograph of the found item</string>
+    <string name="saved_items_hint">Showing saved items. Refresh to fetch updates.</string>
 </resources>
