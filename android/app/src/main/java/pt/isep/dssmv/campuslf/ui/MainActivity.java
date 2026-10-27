@@ -1,5 +1,6 @@
 package pt.isep.dssmv.campuslf.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -35,6 +36,11 @@ public final class MainActivity extends BaseActivity {
         list.setEmptyView(findViewById(R.id.emptyListText));
         itemAdapter = new FoundItemAdapter(this, new ArrayList<>());
         list.setAdapter(itemAdapter);
+        list.setOnItemClickListener((parent, view, position, id) -> {
+            Intent intent = new Intent(this, ItemDetailsActivity.class);
+            intent.putExtra(ItemDetailsActivity.EXTRA_ITEM_ID, itemAdapter.getItem(position).id);
+            startActivity(intent);
+        });
         findViewById(R.id.refreshButton).setOnClickListener(view -> viewModel.refresh());
         findViewById(R.id.addItemButton).setEnabled(false);
 
