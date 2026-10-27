@@ -1,70 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-    <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="24dp">
-
-        <TextView
-                style="@style/ScreenTitle"
-                android:text="@string/item_details" />
-
-        <TextView
-                style="@style/FieldLabel"
-                android:layout_marginTop="20dp"
-                android:text="@string/title" />
-
-        <TextView
-                android:id="@+id/titleText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-        <TextView
-                style="@style/FieldLabel"
-                android:text="@string/description" />
-
-        <TextView
-                android:id="@+id/descriptionText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-        <TextView
-                style="@style/FieldLabel"
-                android:text="@string/category" />
-
-        <TextView
-                android:id="@+id/categoryText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-        <TextView
-                style="@style/FieldLabel"
-                android:text="@string/location" />
-
-        <TextView
-                android:id="@+id/locationText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-        <TextView
-                style="@style/FieldLabel"
-                android:text="@string/found_date" />
-
-        <TextView
-                android:id="@+id/dateText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-        <Button
-                android:id="@+id/backButton"
-                style="@style/PrimaryButton"
-                android:layout_marginTop="24dp"
-                android:text="@string/back" />
-
+            android:layout_width="match_parent" android:layout_height="match_parent" android:fillViewport="true">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                  android:orientation="vertical" android:padding="16dp">
+        <TextView style="@style/ScreenTitle" android:text="@string/item_details" />
+        <TextView android:id="@+id/statusText" android:layout_width="match_parent"
+                  android:layout_height="wrap_content" android:paddingTop="8dp" android:accessibilityLiveRegion="polite" />
+        <TextView android:id="@+id/detailsEmptyText" android:layout_width="match_parent"
+                  android:layout_height="wrap_content" android:padding="24dp" android:text="@string/item_not_found" />
+        <LinearLayout android:id="@+id/detailsContent" android:layout_width="match_parent"
+                      android:layout_height="wrap_content" android:orientation="vertical" android:visibility="gone">
+            <ImageView android:id="@+id/detailImage" android:layout_width="match_parent"
+                       android:layout_height="220dp" android:scaleType="centerInside"
+                       android:contentDescription="@string/object_photo" />
+            <TextView android:id="@+id/titleText" style="@style/ListItemTitle" />
+            <TextView style="@style/FieldLabel" android:text="@string/description" />
+            <TextView android:id="@+id/descriptionText" style="@style/ListItemText" />
+            <TextView style="@style/FieldLabel" android:text="@string/building" />
+            <TextView android:id="@+id/buildingText" style="@style/ListItemText" />
+            <TextView style="@style/FieldLabel" android:text="@string/category" />
+            <TextView android:id="@+id/categoryText" style="@style/ListItemText" />
+            <TextView style="@style/FieldLabel" android:text="@string/location" />
+            <TextView android:id="@+id/locationText" style="@style/ListItemText" />
+            <TextView style="@style/FieldLabel" android:text="@string/found_date" />
+            <TextView android:id="@+id/dateText" style="@style/ListItemText" />
+            <TextView style="@style/FieldLabel" android:text="@string/gps_coordinates" />
+            <TextView android:id="@+id/coordinatesText" style="@style/ListItemText" />
+        </LinearLayout>
+        <Button android:id="@+id/refreshButton" style="@style/PrimaryButton" android:text="@string/refresh" />
+        <Button android:id="@+id/backButton" style="@style/PrimaryButton" android:text="@string/back" />
     </LinearLayout>
-
 </ScrollView>
