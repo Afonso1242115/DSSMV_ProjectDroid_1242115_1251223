@@ -1,45 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:orientation="vertical"
-              android:padding="24dp">
-
-    <TextView
-            style="@style/ScreenTitle"
-            android:text="@string/found_items" />
-
-    <TextView
-            android:id="@+id/statusText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp" />
-
-    <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_marginTop="16dp"
-            android:layout_weight="1">
-
-        <ListView
-                android:id="@+id/foundItemsList"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:dividerHeight="8dp" />
-
-        <TextView
-                android:id="@+id/emptyListText"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:text="@string/empty_list"
-                android:textSize="16sp" />
-
+              android:layout_width="match_parent" android:layout_height="match_parent"
+              android:orientation="vertical" android:padding="16dp">
+    <TextView style="@style/ScreenTitle" android:text="@string/found_items" />
+    <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+              android:layout_marginTop="6dp" android:text="@string/saved_items_hint" />
+    <TextView style="@style/FieldLabel" android:text="@string/building" />
+    <Spinner android:id="@+id/buildingSpinner" android:layout_width="match_parent"
+             android:layout_height="48dp" android:contentDescription="@string/building" />
+    <TextView style="@style/FieldLabel" android:text="@string/category" />
+    <Spinner android:id="@+id/categorySpinner" android:layout_width="match_parent"
+             android:layout_height="48dp" android:contentDescription="@string/category" />
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                  android:orientation="horizontal">
+        <Button android:id="@+id/refreshButton" android:layout_width="0dp"
+                android:layout_weight="1" android:layout_height="wrap_content" android:text="@string/refresh" />
+        <Button android:id="@+id/addItemButton" android:layout_width="0dp"
+                android:layout_weight="1" android:layout_height="wrap_content" android:text="@string/add_item" />
+    </LinearLayout>
+    <ProgressBar android:id="@+id/refreshProgress" style="?android:attr/progressBarStyleHorizontal"
+                 android:layout_width="match_parent" android:layout_height="4dp" android:indeterminate="true"
+                 android:visibility="gone" />
+    <TextView android:id="@+id/statusText" android:layout_width="match_parent"
+              android:layout_height="wrap_content" android:paddingTop="8dp" android:accessibilityLiveRegion="polite" />
+    <TextView android:id="@+id/itemCountText" android:layout_width="match_parent"
+              android:layout_height="wrap_content" android:paddingTop="8dp" />
+    <FrameLayout android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1">
+        <ListView android:id="@+id/foundItemsList" android:layout_width="match_parent"
+                  android:layout_height="match_parent" android:dividerHeight="8dp" />
+        <TextView android:id="@+id/emptyListText" android:layout_width="match_parent"
+                  android:layout_height="wrap_content" android:padding="24dp" android:gravity="center"
+                  android:text="@string/empty_list" />
     </FrameLayout>
-
-    <Button
-            android:id="@+id/addItemButton"
-            style="@style/PrimaryButton"
-            android:text="@string/add_item" />
-
 </LinearLayout>

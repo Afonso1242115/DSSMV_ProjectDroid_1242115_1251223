@@ -1,6 +1,6 @@
 package pt.isep.dssmv.campuslf.ui;
 
-import android.app.Activity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 
 import java.util.concurrent.Callable;
@@ -10,7 +10,7 @@ import pt.isep.dssmv.campuslf.CampusLfApplication;
 import pt.isep.dssmv.campuslf.data.FoundItemRepository;
 
 /** Funcionalidade comum às Activities da aplicação. */
-public abstract class BaseActivity extends Activity {
+public abstract class BaseActivity extends AppCompatActivity {
     protected FoundItemRepository repository;
     private CampusLfApplication application;
 
