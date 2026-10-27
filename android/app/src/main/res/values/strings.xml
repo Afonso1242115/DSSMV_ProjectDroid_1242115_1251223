@@ -39,4 +39,6 @@
     <string name="refresh">Refresh</string>
     <string name="object_photo">Photograph of the found item</string>
     <string name="saved_items_hint">Showing saved items. Refresh to fetch updates.</string>
+    <string name="no_coordinates">No GPS location was provided.</string>
+    <string name="gps_coordinates">GPS coordinates</string>
 </resources>
