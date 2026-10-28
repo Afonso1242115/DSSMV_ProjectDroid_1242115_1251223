@@ -9,6 +9,8 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -20,6 +22,11 @@ import pt.isep.dssmv.campuslf.viewmodel.MainViewModel;
 /** View only: binds widgets, forwards actions and observes its ViewModel. */
 public final class MainActivity extends BaseActivity {
     private MainViewModel viewModel;
+    private final ActivityResultLauncher<Intent> publisher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(), result -> {
+                if (result.getResultCode() == RESULT_OK && result.getData() != null
+                        && result.getData().getBooleanExtra("refresh_required", false)) viewModel.refresh();
+            });
     private FoundItemAdapter itemAdapter;
     private Spinner buildingSpinner;
     private Spinner categorySpinner;
@@ -42,7 +49,8 @@ public final class MainActivity extends BaseActivity {
             startActivity(intent);
         });
         findViewById(R.id.refreshButton).setOnClickListener(view -> viewModel.refresh());
-        findViewById(R.id.addItemButton).setEnabled(false);
+        findViewById(R.id.addItemButton).setOnClickListener(view ->
+                publisher.launch(new Intent(this, AddItemActivity.class)));
 
         viewModel.getItems().observe(this, items -> {
             itemAdapter.clear();
