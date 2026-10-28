@@ -1,139 +1,179 @@
 package pt.isep.dssmv.campuslf.ui;
 
 import android.app.DatePickerDialog;
+import android.content.ActivityNotFoundException;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
-
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.core.content.FileProvider;
+import androidx.lifecycle.ViewModelProvider;
+import com.bumptech.glide.Glide;
+import java.io.File;
+import java.io.IOException;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-
+import java.util.ArrayList;
+import java.util.List;
 import pt.isep.dssmv.campuslf.R;
-import pt.isep.dssmv.campuslf.model.FoundItem;
+import pt.isep.dssmv.campuslf.data.local.entity.BuildingEntity;
+import pt.isep.dssmv.campuslf.data.local.entity.CategoryEntity;
+import pt.isep.dssmv.campuslf.viewmodel.AddItemViewModel;
+import pt.isep.dssmv.campuslf.viewmodel.OperationState;
 
-/** Formulário para registar um novo objeto encontrado. */
 public final class AddItemActivity extends BaseActivity {
-    private EditText titleInput;
-    private EditText descriptionInput;
-    private EditText locationInput;
+    private AddItemViewModel viewModel;
+    private Spinner buildingSpinner;
     private Spinner categorySpinner;
-    private LocalDate foundDate = LocalDate.now();
-    private Button dateButton;
-    private Button saveButton;
+    private List<BuildingEntity> buildings = new ArrayList<>();
+    private List<CategoryEntity> categories = new ArrayList<>();
+    private final ActivityResultLauncher<Uri> camera = registerForActivityResult(
+            new ActivityResultContracts.TakePicture(), success -> viewModel.photoResult(success));
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_item);
-
-        titleInput = findViewById(R.id.titleInput);
-        descriptionInput = findViewById(R.id.descriptionInput);
-        locationInput = findViewById(R.id.locationInput);
+        viewModel = new ViewModelProvider(this).get(AddItemViewModel.class);
+        bindText(R.id.titleInput, "title");
+        bindText(R.id.descriptionInput, "description");
+        bindText(R.id.locationInput, "location");
+        buildingSpinner = findViewById(R.id.buildingSpinner);
         categorySpinner = findViewById(R.id.categorySpinner);
-
-        ArrayAdapter<CharSequence> categoryAdapter = ArrayAdapter.createFromResource(
-                this,
-                R.array.item_categories,
-                android.R.layout.simple_spinner_item);
-        categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        categorySpinner.setAdapter(categoryAdapter);
-
-        dateButton = findViewById(R.id.dateButton);
-        updateDateButton();
-        dateButton.setOnClickListener(view -> openDatePicker());
-
-        saveButton = findViewById(R.id.saveButton);
-        saveButton.setOnClickListener(view -> saveItem());
+        findViewById(R.id.dateButton).setOnClickListener(view -> chooseDate());
+        findViewById(R.id.photoButton).setOnClickListener(view -> takePhoto());
+        findViewById(R.id.saveButton).setOnClickListener(view -> viewModel.publish());
         findViewById(R.id.cancelButton).setOnClickListener(view -> finish());
-    }
-
-    private void openDatePicker() {
-        DatePickerDialog dialog = new DatePickerDialog(
-                this,
-                (view, year, month, dayOfMonth) -> {
-                    foundDate = LocalDate.of(year, month + 1, dayOfMonth);
-                    updateDateButton();
-                },
-                foundDate.getYear(),
-                foundDate.getMonthValue() - 1,
-                foundDate.getDayOfMonth());
-
-        dialog.getDatePicker().setMaxDate(System.currentTimeMillis());
-        dialog.show();
-    }
-
-    private void updateDateButton() {
-        dateButton.setText(foundDate.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
-    }
-
-    private void saveItem() {
-        boolean valid = validateInput(
-                titleInput, "Title", 3, FoundItem.MAX_TITLE_LENGTH)
-                & validateInput(
-                descriptionInput, "Description", 5, FoundItem.MAX_DESCRIPTION_LENGTH)
-                & validateInput(
-                locationInput, "Location", 2, FoundItem.MAX_LOCATION_LENGTH);
-
-        if (!valid) {
-            return;
-        }
-
-        final FoundItem item;
-        try {
-            item = new FoundItem(
-                    0,
-                    titleInput.getText().toString(),
-                    descriptionInput.getText().toString(),
-                    categorySpinner.getSelectedItem().toString(),
-                    locationInput.getText().toString(),
-                    foundDate);
-        } catch (IllegalArgumentException exception) {
-            Toast.makeText(this, exception.getMessage(), Toast.LENGTH_LONG).show();
-            return;
-        }
-
-        setFormEnabled(false);
-        saveButton.setText(R.string.saving);
-
-        runAsync(() -> repository.add(item), id -> {
-            if (id == -1) {
-                setFormEnabled(true);
-                Toast.makeText(this, R.string.save_error, Toast.LENGTH_LONG).show();
-                return;
-            }
-
-            Toast.makeText(this, R.string.item_saved, Toast.LENGTH_SHORT).show();
+        findViewById(R.id.reloadReferencesButton).setOnClickListener(view -> viewModel.refreshReferences());
+        viewModel.getDate().observe(this, value -> ((Button) findViewById(R.id.dateButton)).setText(value));
+        viewModel.getPhoto().observe(this, path -> {
+            if (path != null && !path.isEmpty()) Glide.with(this).load(new File(path))
+                    .into((ImageView) findViewById(R.id.photoPreview));
+        });
+        viewModel.getBuildings().observe(this, this::renderBuildings);
+        viewModel.getCategories().observe(this, this::renderCategories);
+        viewModel.getReferences().observe(this, state ->
+                ((TextView) findViewById(R.id.lookupStatusText)).setText(state.message));
+        viewModel.getPublication().observe(this, state -> {
+            ((TextView) findViewById(R.id.publishStatusText)).setText(state.message);
+            setFormEnabled((ViewGroup) findViewById(R.id.formContent), !state.isRunning());
+            updatePublishButton();
+            if (state.status == OperationState.Status.ERROR)
+                Toast.makeText(this, state.message, Toast.LENGTH_LONG).show();
+        });
+        viewModel.getPublished().observe(this, result -> {
+            if (result == null) return;
+            setResult(RESULT_OK, new Intent().putExtra("refresh_required", !result.cached));
+            Toast.makeText(this, result.cached ? R.string.item_published : R.string.published_refresh,
+                    Toast.LENGTH_LONG).show();
             finish();
-        }, exception -> {
-            setFormEnabled(true);
-            Toast.makeText(this, R.string.save_error, Toast.LENGTH_LONG).show();
+        });
+        buildingSpinner.setOnItemSelectedListener(selectionListener(true));
+        categorySpinner.setOnItemSelectedListener(selectionListener(false));
+    }
+
+    private void bindText(int id, String key) {
+        EditText input = findViewById(id);
+        input.setText(viewModel.getText(key));
+        input.addTextChangedListener(new TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence value, int start, int count, int after) { }
+            @Override public void onTextChanged(CharSequence value, int start, int before, int count) {
+                viewModel.setText(key, value.toString());
+            }
+            @Override public void afterTextChanged(Editable value) { }
         });
     }
 
-    private boolean validateInput(EditText input, String fieldName,
-                                  int minLength, int maxLength) {
+    private AdapterView.OnItemSelectedListener selectionListener(boolean isBuilding) {
+        return new AdapterView.OnItemSelectedListener() {
+            @Override public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                int index = parent.getSelectedItemPosition() - 1;
+                String value = isBuilding
+                        ? (index >= 0 && index < buildings.size() ? buildings.get(index).id : "")
+                        : (index >= 0 && index < categories.size() ? categories.get(index).id : "");
+                viewModel.setText(isBuilding ? "building_id" : "category_id", value);
+            }
+            @Override public void onNothingSelected(AdapterView<?> parent) { }
+        };
+    }
+
+    private void renderBuildings(List<BuildingEntity> values) {
+        buildings = values == null ? new ArrayList<>() : values;
+        List<String> labels = new ArrayList<>();
+        labels.add(getString(R.string.choose_building));
+        int selected = 0;
+        for (int i = 0; i < buildings.size(); i++) {
+            labels.add(buildings.get(i).name);
+            if (buildings.get(i).id.equals(viewModel.getText("building_id"))) selected = i + 1;
+        }
+        setChoices(buildingSpinner, labels, selected);
+        updatePublishButton();
+    }
+
+    private void renderCategories(List<CategoryEntity> values) {
+        categories = values == null ? new ArrayList<>() : values;
+        List<String> labels = new ArrayList<>();
+        labels.add(getString(R.string.choose_category));
+        int selected = 0;
+        for (int i = 0; i < categories.size(); i++) {
+            labels.add(categories.get(i).name);
+            if (categories.get(i).id.equals(viewModel.getText("category_id"))) selected = i + 1;
+        }
+        setChoices(categorySpinner, labels, selected);
+        updatePublishButton();
+    }
+
+    private void setChoices(Spinner spinner, List<String> labels, int selected) {
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, labels);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+        spinner.setSelection(selected, false);
+    }
+
+    private void chooseDate() {
+        LocalDate date = LocalDate.parse(viewModel.getText("found_date"));
+        DatePickerDialog picker = new DatePickerDialog(this, (view, year, month, day) ->
+                viewModel.setText("found_date", LocalDate.of(year, month + 1, day).toString()),
+                date.getYear(), date.getMonthValue() - 1, date.getDayOfMonth());
+        picker.getDatePicker().setMaxDate(System.currentTimeMillis());
+        picker.show();
+    }
+
+    private void takePhoto() {
         try {
-            FoundItem.validateText(input.getText().toString(), fieldName, minLength, maxLength);
-            input.setError(null);
-            return true;
-        } catch (IllegalArgumentException exception) {
-            input.setError(exception.getMessage());
-            return false;
+            File directory = new File(getFilesDir(), "photos");
+            if (!directory.isDirectory() && !directory.mkdirs()) throw new IOException("Photo directory unavailable.");
+            File photo = File.createTempFile("found_", ".jpg", directory);
+            viewModel.setText("pending_photo", photo.getAbsolutePath());
+            Uri uri = FileProvider.getUriForFile(this, getPackageName() + ".fileprovider", photo);
+            camera.launch(uri);
+        } catch (IOException | ActivityNotFoundException error) {
+            viewModel.photoResult(false);
+            Toast.makeText(this, R.string.camera_unavailable, Toast.LENGTH_LONG).show();
         }
     }
 
-    private void setFormEnabled(boolean enabled) {
-        titleInput.setEnabled(enabled);
-        descriptionInput.setEnabled(enabled);
-        locationInput.setEnabled(enabled);
-        categorySpinner.setEnabled(enabled);
-        dateButton.setEnabled(enabled);
-        saveButton.setEnabled(enabled);
-        if (enabled) {
-            saveButton.setText(R.string.save);
+    private void setFormEnabled(ViewGroup group, boolean enabled) {
+        for (int i = 0; i < group.getChildCount(); i++) {
+            View child = group.getChildAt(i);
+            child.setEnabled(enabled);
+            if (child instanceof ViewGroup) setFormEnabled((ViewGroup) child, enabled);
         }
+    }
+
+    private void updatePublishButton() {
+        findViewById(R.id.saveButton).setEnabled(!viewModel.isPublishing()
+                && !buildings.isEmpty() && !categories.isEmpty());
     }
 }
