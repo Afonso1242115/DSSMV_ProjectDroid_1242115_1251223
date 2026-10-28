@@ -41,4 +41,15 @@
     <string name="saved_items_hint">Showing saved items. Refresh to fetch updates.</string>
     <string name="no_coordinates">No GPS location was provided.</string>
     <string name="gps_coordinates">GPS coordinates</string>
+    <string name="choose_building">Choose a building</string>
+    <string name="choose_category">Choose a category</string>
+    <string name="item_published">Item published successfully.</string>
+    <string name="published_refresh">Item published. Refresh the list to download it.</string>
+    <string name="camera_unavailable">The camera is unavailable. Please try again.</string>
+    <string name="take_photo">Take photograph</string>
+    <string name="publish">Publish</string>
+    <string name="reload_choices">Reload buildings and categories</string>
+    <string name="title_hint">For example: blue key ring</string>
+    <string name="description_hint">Describe the found item</string>
+    <string name="location_hint">For example: room F201</string>
 </resources>
