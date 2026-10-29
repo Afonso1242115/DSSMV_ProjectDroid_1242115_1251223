@@ -9,6 +9,7 @@ import androidx.lifecycle.SavedStateHandle;
 import java.io.File;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Locale;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.disposables.CompositeDisposable;
 import pt.isep.dssmv.campuslf.CampusLfApplication;
@@ -42,6 +43,20 @@ public final class AddItemViewModel extends AndroidViewModel {
     public LiveData<PublishResult> getPublished() { return published; }
     public LiveData<String> getPhoto() { return state.getLiveData("photo_path"); }
     public LiveData<String> getDate() { return state.getLiveData("found_date"); }
+    public LiveData<String> getLocationStatus() {
+        return state.getLiveData("location_status", "GPS is optional. A written location is required.");
+    }
+    public void locationMessage(String message) { state.set("location_status", message); }
+    public void setCoordinates(double latitude, double longitude) {
+        state.set("latitude", latitude);
+        state.set("longitude", longitude);
+        locationMessage(String.format(Locale.US, "GPS: %.6f, %.6f", latitude, longitude));
+    }
+    public void clearCoordinates() {
+        state.remove("latitude");
+        state.remove("longitude");
+        locationMessage("No GPS coordinates. You can publish using the written location.");
+    }
     public String getText(String key) { String value = state.get(key); return value == null ? "" : value; }
     public void setText(String key, String value) { state.set(key, value); }
     public boolean isPublishing() { return publication.getValue().isRunning(); }

@@ -1,5 +1,9 @@
 package pt.isep.dssmv.campuslf.ui;
 
+import android.Manifest;
+import android.content.Context;
+import android.content.pm.PackageManager;
+import android.location.LocationManager;
 import android.app.DatePickerDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
@@ -18,8 +22,12 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.core.content.FileProvider;
+import androidx.core.content.ContextCompat;
+import androidx.core.location.LocationManagerCompat;
+import androidx.core.os.CancellationSignal;
 import androidx.lifecycle.ViewModelProvider;
 import com.bumptech.glide.Glide;
 import java.io.File;
@@ -39,6 +47,13 @@ public final class AddItemActivity extends BaseActivity {
     private Spinner categorySpinner;
     private List<BuildingEntity> buildings = new ArrayList<>();
     private List<CategoryEntity> categories = new ArrayList<>();
+    private CancellationSignal locationCancellation;
+    private final ActivityResultLauncher<String[]> locationPermission = registerForActivityResult(
+            new ActivityResultContracts.RequestMultiplePermissions(), grants -> {
+                if (hasPermission(Manifest.permission.ACCESS_FINE_LOCATION)
+                        || hasPermission(Manifest.permission.ACCESS_COARSE_LOCATION)) requestLocation();
+                else viewModel.locationMessage("Location permission declined. You can still publish using the written location.");
+            });
     private final ActivityResultLauncher<Uri> camera = registerForActivityResult(
             new ActivityResultContracts.TakePicture(), success -> viewModel.photoResult(success));
 
@@ -56,6 +71,25 @@ public final class AddItemActivity extends BaseActivity {
         findViewById(R.id.saveButton).setOnClickListener(view -> viewModel.publish());
         findViewById(R.id.cancelButton).setOnClickListener(view -> finish());
         findViewById(R.id.reloadReferencesButton).setOnClickListener(view -> viewModel.refreshReferences());
+        findViewById(R.id.gpsButton).setOnClickListener(view -> {
+            if (hasPermission(Manifest.permission.ACCESS_FINE_LOCATION)
+                    || hasPermission(Manifest.permission.ACCESS_COARSE_LOCATION)) requestLocation();
+            else locationPermission.launch(new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION});
+        });
+        findViewById(R.id.clearGpsButton).setOnClickListener(view -> {
+            if (locationCancellation != null) locationCancellation.cancel();
+            locationCancellation = null;
+            viewModel.clearCoordinates();
+        });
+        viewModel.getLocationStatus().observe(this, value ->
+                ((TextView) findViewById(R.id.gpsStatusText)).setText(value));
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override public void handleOnBackPressed() {
+                if (!viewModel.isPublishing()) finish();
+                else Toast.makeText(AddItemActivity.this, R.string.wait_for_publication, Toast.LENGTH_SHORT).show();
+            }
+        });
         viewModel.getDate().observe(this, value -> ((Button) findViewById(R.id.dateButton)).setText(value));
         viewModel.getPhoto().observe(this, path -> {
             if (path != null && !path.isEmpty()) Glide.with(this).load(new File(path))
@@ -66,6 +100,11 @@ public final class AddItemActivity extends BaseActivity {
         viewModel.getReferences().observe(this, state ->
                 ((TextView) findViewById(R.id.lookupStatusText)).setText(state.message));
         viewModel.getPublication().observe(this, state -> {
+            if (state.isRunning() && locationCancellation != null) {
+                locationCancellation.cancel();
+                locationCancellation = null;
+                viewModel.locationMessage("Publishing with the location currently selected.");
+            }
             ((TextView) findViewById(R.id.publishStatusText)).setText(state.message);
             setFormEnabled((ViewGroup) findViewById(R.id.formContent), !state.isRunning());
             updatePublishButton();
@@ -175,5 +214,43 @@ public final class AddItemActivity extends BaseActivity {
     private void updatePublishButton() {
         findViewById(R.id.saveButton).setEnabled(!viewModel.isPublishing()
                 && !buildings.isEmpty() && !categories.isEmpty());
+    }
+
+    private boolean hasPermission(String permission) {
+        return ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED;
+    }
+
+    private void requestLocation() {
+        LocationManager manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        try {
+            String provider = hasPermission(Manifest.permission.ACCESS_FINE_LOCATION)
+                    && manager.isProviderEnabled(LocationManager.GPS_PROVIDER) ? LocationManager.GPS_PROVIDER
+                    : manager.isProviderEnabled(LocationManager.NETWORK_PROVIDER) ? LocationManager.NETWORK_PROVIDER : null;
+            if (provider == null) {
+                viewModel.locationMessage("Enable device location or continue using the written location.");
+                return;
+            }
+            if (locationCancellation != null) locationCancellation.cancel();
+            locationCancellation = new CancellationSignal();
+            viewModel.locationMessage("Getting location...");
+            LocationManagerCompat.getCurrentLocation(manager, provider, locationCancellation,
+                    ContextCompat.getMainExecutor(this), location -> {
+                        locationCancellation = null;
+                        if (location == null) viewModel.locationMessage("No location received. You can still publish using the written location.");
+                        else viewModel.setCoordinates(location.getLatitude(), location.getLongitude());
+                    });
+        } catch (SecurityException | IllegalArgumentException error) {
+            locationCancellation = null;
+            viewModel.locationMessage("Location unavailable. You can still publish using the written location.");
+        }
+    }
+
+    @Override protected void onStop() {
+        if (locationCancellation != null) {
+            locationCancellation.cancel();
+            locationCancellation = null;
+            viewModel.locationMessage("Location request stopped. You can request it again or use the written location.");
+        }
+        super.onStop();
     }
 }

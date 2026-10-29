@@ -52,4 +52,7 @@
     <string name="title_hint">For example: blue key ring</string>
     <string name="description_hint">Describe the found item</string>
     <string name="location_hint">For example: room F201</string>
+    <string name="get_gps">Get optional GPS location</string>
+    <string name="clear_gps">Remove GPS coordinates</string>
+    <string name="wait_for_publication">Please wait for the publication result.</string>
 </resources>
