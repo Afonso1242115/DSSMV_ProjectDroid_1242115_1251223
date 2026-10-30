@@ -2,7 +2,7 @@
 
 Aplicação Android desenvolvida em Java para registar e consultar objetos encontrados no campus do ISEP.
 
-**Equipa:** Afonso Maia (1242115) e Fernanda Vale (1251223) — DSSMV, turma 2DB.
+**Equipa:** Afonso Maia (1242115) e Fernanda Vale (1251223) - DSSMV, turma 2DB.
 
 ## Funcionalidades
 
