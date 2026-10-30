@@ -1,10 +1,10 @@
 @echo off
 setlocal
-set OUT=build\model-tests
-if exist "%OUT%" rmdir /s /q "%OUT%"
-mkdir "%OUT%"
+set "ROOT=%~dp0.."
+set "OUT=%ROOT%\build\model-tests"
+if not exist "%OUT%" mkdir "%OUT%"
 
-javac -d "%OUT%" app\src\main\java\com\campuslf\app\model\FoundItem.java tools\ModelSmokeTest.java
+javac -encoding UTF-8 -d "%OUT%" "%ROOT%\app\src\main\java\pt\isep\dssmv\campuslf\model\FoundItem.java" "%ROOT%\tools\ModelSmokeTest.java"
 if errorlevel 1 exit /b 1
 
 java -cp "%OUT%" ModelSmokeTest

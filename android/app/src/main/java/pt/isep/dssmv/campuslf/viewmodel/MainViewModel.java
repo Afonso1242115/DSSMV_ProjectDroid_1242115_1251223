@@ -42,12 +42,18 @@ public final class MainViewModel extends AndroidViewModel {
     public LiveData<List<BuildingEntity>> getBuildings() { return repository.observeBuildings(); }
     public LiveData<List<CategoryEntity>> getCategories() { return repository.observeCategories(); }
     public LiveData<OperationState> getOperation() { return operation; }
-    public String getBuildingId() { return filters.getValue().buildingId; }
-    public String getCategoryId() { return filters.getValue().categoryId; }
+    public String getBuildingId() {
+        Filters current = filters.getValue();
+        return current == null ? null : current.buildingId;
+    }
+    public String getCategoryId() {
+        Filters current = filters.getValue();
+        return current == null ? null : current.categoryId;
+    }
 
     public void setFilters(String buildingId, String categoryId) {
         Filters previous = filters.getValue();
-        if (Objects.equals(previous.buildingId, buildingId)
+        if (previous != null && Objects.equals(previous.buildingId, buildingId)
                 && Objects.equals(previous.categoryId, categoryId)) return;
         savedState.set("filter_building", buildingId);
         savedState.set("filter_category", categoryId);

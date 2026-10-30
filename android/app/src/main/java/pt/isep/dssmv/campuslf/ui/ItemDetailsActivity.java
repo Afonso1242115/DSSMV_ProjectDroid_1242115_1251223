@@ -4,13 +4,14 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import java.util.Locale;
 import pt.isep.dssmv.campuslf.R;
 import pt.isep.dssmv.campuslf.util.MediaImages;
 import pt.isep.dssmv.campuslf.viewmodel.ItemDetailsViewModel;
 
-public final class ItemDetailsActivity extends BaseActivity {
+public final class ItemDetailsActivity extends AppCompatActivity {
     public static final String EXTRA_ITEM_ID = ItemDetailsViewModel.ITEM_ID_KEY;
 
     @Override protected void onCreate(Bundle savedInstanceState) {
