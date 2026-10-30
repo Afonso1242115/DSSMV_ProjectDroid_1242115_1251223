@@ -1,11 +1,9 @@
 #!/bin/sh
 set -eu
-OUT="build/model-tests"
-rm -rf "$OUT"
+ROOT=$(CDPATH= cd "$(dirname "$0")/.." && pwd)
+OUT="$ROOT/build/model-tests"
 mkdir -p "$OUT"
-
-javac -d "$OUT" \
-  app/src/main/java/com/campuslf/app/model/FoundItem.java \
-  tools/ModelSmokeTest.java
-
+javac -encoding UTF-8 -d "$OUT" \
+  "$ROOT/app/src/main/java/pt/isep/dssmv/campuslf/model/FoundItem.java" \
+  "$ROOT/tools/ModelSmokeTest.java"
 java -cp "$OUT" ModelSmokeTest

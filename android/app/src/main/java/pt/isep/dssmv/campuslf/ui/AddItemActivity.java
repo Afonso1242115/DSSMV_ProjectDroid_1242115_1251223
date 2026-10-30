@@ -28,6 +28,7 @@ import androidx.core.content.FileProvider;
 import androidx.core.content.ContextCompat;
 import androidx.core.location.LocationManagerCompat;
 import androidx.core.os.CancellationSignal;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import com.bumptech.glide.Glide;
 import java.io.File;
@@ -41,7 +42,7 @@ import pt.isep.dssmv.campuslf.data.local.entity.CategoryEntity;
 import pt.isep.dssmv.campuslf.viewmodel.AddItemViewModel;
 import pt.isep.dssmv.campuslf.viewmodel.OperationState;
 
-public final class AddItemActivity extends BaseActivity {
+public final class AddItemActivity extends AppCompatActivity {
     private AddItemViewModel viewModel;
     private Spinner buildingSpinner;
     private Spinner categorySpinner;
@@ -222,6 +223,10 @@ public final class AddItemActivity extends BaseActivity {
 
     private void requestLocation() {
         LocationManager manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        if (manager == null) {
+            viewModel.locationMessage("Location service unavailable. You can still use the written location.");
+            return;
+        }
         try {
             String provider = hasPermission(Manifest.permission.ACCESS_FINE_LOCATION)
                     && manager.isProviderEnabled(LocationManager.GPS_PROVIDER) ? LocationManager.GPS_PROVIDER

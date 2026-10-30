@@ -1,73 +1,77 @@
-# DSSMV_ProjectDroid_1242115_1251223
 # Campus L&F
 
-Projeto desenvolvido no âmbito da unidade curricular de
-Desenvolvimento de Software e Sistemas Móveis (DSSMV),
-da Licenciatura em Engenharia de Telecomunicações e Informática
-do ISEP, no ano letivo 2026/2027.
+Aplicação Android para registar e consultar objetos encontrados no campus do ISEP, desenvolvida na unidade curricular de Desenvolvimento de Software e Sistemas Móveis (DSSMV), LETI, ano letivo 2026/2027.
 
-## Equipa
+**Equipa:** Afonso Maia (1242115) e Fernanda Vale (1251223) — turma 2DB.
 
-| Nome | Número |
-|------|--------|
-| Afonso Maia | 1242115 |
-| Fernanda Vale | 1251223 |
+## Checkpoint 2 — funcionalidades implementadas no código
 
-Turma: 2DB.
+- Lista de objetos encontrados, detalhes e filtros por edifício e categoria.
+- Publicação de um objeto com fotografia tirada pela câmara, descrição, data e localização textual.
+- Obtenção **opcional** de coordenadas GPS, com pedido de permissão e possibilidade de continuar sem GPS.
+- Comunicação com a API restdb.io para edifícios, categorias, objetos e imagens.
+- Cache local Room para continuar a apresentar os dados já descarregados sem ligação à rede.
+- Validação dos dados e apresentação do estado de carregamento/publicação.
 
-## Descrição
+O checkpoint 2 tem a estrutura de código implementada, mas a integração real com a API e o funcionamento em dispositivos devem ser confirmados com a checklist em `Documentation/CHECKPOINT2_VALIDATION.md`. Este checkpoint **não é a entrega final**.
 
-O projeto propõe uma aplicação Android para publicar e consultar
-objetos encontrados no campus.
+## Arquitetura
 
-Quem encontrar um objeto poderá tirar uma fotografia, preencher
-uma descrição e indicar o local onde o encontrou. A informação
-será enviada para uma API e ficará disponível para consulta
-pelos restantes utilizadores da aplicação.
+```text
+Activity (View) -> ViewModel -> CampusRepository -> Room (CampusDao / CampusDatabase)
+                                              \-> Retrofit (RestDbService / restdb.io)
 
-## Funcionalidades previstas
+Room LiveData -> Repository -> ViewModel -> Activity observers
+```
 
-- Consultar a lista de objetos encontrados.
-- Consultar os detalhes de um objeto.
-- Publicar um objeto com fotografia e descrição.
-- Indicar o local do achado, com apoio opcional da localização
-  do dispositivo.
-- Enviar e consultar informação através de uma API.
+- **Java**; Android SDK 35 (compile), Android 8.0 / API 26 (mínimo), Java 17.
+- **MVVM**, Android Jetpack ViewModel + LiveData + SavedStateHandle.
+- **Room** para SQLite local, com `CampusDatabase` singleton e `CampusDao`.
+- **Retrofit** com `RestDbClient` singleton e conversão Gson.
+- **RxJava 3** para trabalho assíncrono e atualização da interface na thread principal.
+- **Glide** para pré-visualização e carregamento de fotografias.
 
-## Ecrãs previstos
+O código de acesso à API e à base de dados fica no Repository; as Activities observam os ViewModels e não fazem consultas SQL nem pedidos HTTP diretamente.
 
-- Lista de objetos encontrados.
-- Detalhes do objeto selecionado.
-- Formulário de publicação de um novo objeto.
+## Preparação no IntelliJ IDEA (Windows e macOS)
 
-## Tecnologias e arquitetura propostas
+1. Abrir a pasta **raiz do repositório** (onde está `settings.gradle`), e não apenas `android/`.
+2. Configurar JDK 17 e instalar Android SDK Platform 35 no ambiente de desenvolvimento.
+3. Criar ou editar `local.properties` na **raiz**. O IDE pode preencher automaticamente `sdk.dir`. Acrescentar:
+   ```properties
+   restdb.url=https://SUA-BASE.restdb.io/
+   restdb.apiKey=SUA_CHAVE_RESTRITA
+   ```
+4. Na restdb.io, disponibilizar as coleções `buildings`, `categories` e `founditems`, com relações para edifício, categoria e imagens. A aplicação espera os campos `name` nas duas primeiras e, em `founditems`, os campos `title`, `description`, `detailed_location`, `found_date`, `building`, `category`, `photos`, `latitude` e `longitude`.
+5. Fazer Gradle Sync, escolher um emulador/dispositivo com API 26 ou superior e iniciar `MainActivity`.
 
-- Aplicação móvel: Android, utilizando Java.
-- Comunicação com o servidor: API REST.
-- Tecnologia de implementação da API: 
-- Base de dados e armazenamento de imagens: 
+**Segurança:** `local.properties` está no `.gitignore`; nunca publicar a chave. Mesmo assim, os valores de `BuildConfig` ficam acessíveis numa app compilada: utilizar **apenas uma chave limitada**, nunca uma chave administrativa ou com permissões globais. Restringir o acesso à base de dados de demonstração.
 
-A aplicação comunicará com a API, que será responsável pela
-validação e persistência dos dados.
+Se a API não estiver configurada, a aplicação mostra erro ao tentar sincronizar. Os itens já guardados em Room continuam disponíveis para consulta.
+
+## Compilar
+
+A partir da raiz do repositório:
+
+- **Windows:** `gradlew.bat :app:assembleDebug`
+- **macOS/Linux:** `./gradlew :app:assembleDebug`
+
+O wrapper utiliza Gradle 8.13. O módulo Android está em `android/app`, mas é registado como `:app` em `settings.gradle`.
+
+## Testes rápidos do modelo
+
+A partir da raiz do repositório, com um JDK instalado:
+
+- **Windows:** `android\tools\run-model-tests.bat`
+- **macOS/Linux:** `sh android/tools/run-model-tests.sh`
+
+Os scripts compilam `FoundItem` e executam nove verificações de validação sem SDK Android. Ver também `Documentation/CHECKPOINT2_VALIDATION.md` para os testes manuais da aplicação e da API.
 
 ## Documentação
 
-A pasta `docs/` contém a versão inicial do relatório de apoio
-ao primeiro checkpoint.
-
-## Estado do projeto
-
-Este README descreve o âmbito e o desenho preliminar.
-As funcionalidades indicadas são objetivos de desenvolvimento,
-não uma declaração de funcionalidades já implementadas.
-
-As instruções de instalação e execução serão acrescentadas
-quando existir uma versão executável no repositório.
+- `Documentation/DSSMV Relatório.doc`: relatório académico inicial (a atualizar nos próximos checkpoints).
+- `Documentation/CHECKPOINT2_VALIDATION.md`: critérios de aceitação e testes manuais do checkpoint 2.
 
 ## Utilização de inteligência artificial
 
-Foi utilizado o ChatGPT como apoio à organização e redação
-inicial da documentação e à discussão de requisitos e desenho.
-
-Os autores são responsáveis pela revisão do conteúdo,
-pelas decisões tomadas e pela compreensão do trabalho apresentado.
+O ChatGPT foi utilizado como apoio à organização da documentação, revisão da arquitetura e melhoria de código. A equipa é responsável por rever, compreender, executar e validar os resultados.

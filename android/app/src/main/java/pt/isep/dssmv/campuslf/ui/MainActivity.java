@@ -8,6 +8,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -20,7 +21,7 @@ import pt.isep.dssmv.campuslf.data.local.entity.CategoryEntity;
 import pt.isep.dssmv.campuslf.viewmodel.MainViewModel;
 
 /** View only: binds widgets, forwards actions and observes its ViewModel. */
-public final class MainActivity extends BaseActivity {
+public final class MainActivity extends AppCompatActivity {
     private MainViewModel viewModel;
     private final ActivityResultLauncher<Intent> publisher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(), result -> {

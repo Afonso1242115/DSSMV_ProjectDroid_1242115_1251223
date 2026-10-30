@@ -59,10 +59,14 @@ public final class AddItemViewModel extends AndroidViewModel {
     }
     public String getText(String key) { String value = state.get(key); return value == null ? "" : value; }
     public void setText(String key, String value) { state.set(key, value); }
-    public boolean isPublishing() { return publication.getValue().isRunning(); }
+    public boolean isPublishing() {
+        OperationState current = publication.getValue();
+        return current != null && current.isRunning();
+    }
 
     public void refreshReferences() {
-        if (references.getValue().isRunning() || isPublishing()) return;
+        OperationState current = references.getValue();
+        if ((current != null && current.isRunning()) || isPublishing()) return;
         references.setValue(OperationState.running("Loading buildings and categories..."));
         disposables.add(repository.refreshReferences().observeOn(AndroidSchedulers.mainThread())
                 .subscribe(() -> references.setValue(OperationState.success("Buildings and categories updated.")),

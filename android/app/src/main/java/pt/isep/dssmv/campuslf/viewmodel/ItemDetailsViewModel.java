@@ -35,7 +35,8 @@ public final class ItemDetailsViewModel extends AndroidViewModel {
     public LiveData<OperationState> getOperation() { return operation; }
 
     public void refresh() {
-        if (itemId == null || itemId.isEmpty() || operation.getValue().isRunning()) return;
+        OperationState current = operation.getValue();
+        if (itemId == null || itemId.isEmpty() || (current != null && current.isRunning())) return;
         operation.setValue(OperationState.running("Refreshing details..."));
         disposables.add(repository.refreshItem(itemId).observeOn(AndroidSchedulers.mainThread())
                 .subscribe(() -> operation.setValue(OperationState.success("Details updated.")),
