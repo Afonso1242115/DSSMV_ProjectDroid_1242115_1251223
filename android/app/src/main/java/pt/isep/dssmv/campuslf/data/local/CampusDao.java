@@ -18,9 +18,15 @@ import pt.isep.dssmv.campuslf.data.local.entity.FoundItemEntity;
 public abstract class CampusDao {
     @Query("SELECT * FROM found_items_cache WHERE "
             + "(:buildingId IS NULL OR buildingId = :buildingId) AND "
-            + "(:categoryId IS NULL OR categoryId = :categoryId) "
+            + "(:categoryId IS NULL OR categoryId = :categoryId) AND "
+            + "(:searchQuery = '' OR instr(lower(title), lower(:searchQuery)) > 0 "
+            + "OR instr(lower(description), lower(:searchQuery)) > 0 "
+            + "OR instr(lower(detailedLocation), lower(:searchQuery)) > 0 "
+            + "OR instr(lower(buildingName), lower(:searchQuery)) > 0 "
+            + "OR instr(lower(categoryName), lower(:searchQuery)) > 0) "
             + "ORDER BY foundDate DESC, id DESC")
-    public abstract LiveData<List<FoundItemEntity>> observeItems(String buildingId, String categoryId);
+    public abstract LiveData<List<FoundItemEntity>> observeItems(String buildingId, String categoryId,
+                                                                 String searchQuery);
 
     @Query("SELECT * FROM found_items_cache WHERE id = :id LIMIT 1")
     public abstract LiveData<FoundItemEntity> observeItem(String id);
