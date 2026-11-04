@@ -5,6 +5,11 @@
     <TextView style="@style/ScreenTitle" android:text="@string/found_items" />
     <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
               android:layout_marginTop="6dp" android:text="@string/saved_items_hint" />
+    <EditText android:id="@+id/searchInput" android:layout_width="match_parent"
+              android:layout_height="wrap_content" android:minHeight="48dp"
+              android:layout_marginTop="12dp" android:singleLine="true"
+              android:inputType="text" android:imeOptions="actionSearch"
+              android:hint="@string/search_items_hint" />
     <TextView style="@style/FieldLabel" android:text="@string/building" />
     <Spinner android:id="@+id/buildingSpinner" android:layout_width="match_parent"
              android:layout_height="48dp" android:contentDescription="@string/building" />
