@@ -33,6 +33,7 @@
         <item>Documents</item>
         <item>Other</item>
     </string-array>
+    <string name="search_items_hint">Search title, description or location</string>
     <string name="building">Building</string>
     <string name="all_buildings">All buildings</string>
     <string name="all_categories">All categories</string>
