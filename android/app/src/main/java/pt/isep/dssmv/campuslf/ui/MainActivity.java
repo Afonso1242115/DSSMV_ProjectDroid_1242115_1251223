@@ -2,9 +2,12 @@ package pt.isep.dssmv.campuslf.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -40,6 +43,15 @@ public final class MainActivity extends AppCompatActivity {
         viewModel = new ViewModelProvider(this).get(MainViewModel.class);
         buildingSpinner = findViewById(R.id.buildingSpinner);
         categorySpinner = findViewById(R.id.categorySpinner);
+        EditText searchInput = findViewById(R.id.searchInput);
+        searchInput.setText(viewModel.getSearchText());
+        searchInput.addTextChangedListener(new TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
+                viewModel.setSearchText(s.toString());
+            }
+            @Override public void afterTextChanged(Editable s) { }
+        });
         ListView list = findViewById(R.id.foundItemsList);
         list.setEmptyView(findViewById(R.id.emptyListText));
         itemAdapter = new FoundItemAdapter(this, new ArrayList<>());
