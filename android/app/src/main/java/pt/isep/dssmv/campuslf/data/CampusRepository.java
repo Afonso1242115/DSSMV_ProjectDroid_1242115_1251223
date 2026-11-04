@@ -57,8 +57,9 @@ public final class CampusRepository {
         return instance;
     }
 
-    public LiveData<List<FoundItemEntity>> observeItems(String buildingId, String categoryId) {
-        return dao.observeItems(buildingId, categoryId);
+    public LiveData<List<FoundItemEntity>> observeItems(String buildingId, String categoryId,
+                                                        String searchQuery) {
+        return dao.observeItems(buildingId, categoryId, searchQuery);
     }
 
     public LiveData<FoundItemEntity> observeItem(String id) { return dao.observeItem(id); }
