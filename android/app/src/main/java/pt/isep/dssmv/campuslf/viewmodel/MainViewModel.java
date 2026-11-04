@@ -32,9 +32,10 @@ public final class MainViewModel extends AndroidViewModel {
         this.savedState = savedState;
         repository = ((CampusLfApplication) application).getCampusRepository();
         filters = new MutableLiveData<>(new Filters(savedState.get("filter_building"),
-                savedState.get("filter_category")));
+                savedState.get("filter_category"), savedState.get("filter_search")));
         items = Transformations.switchMap(filters,
-                selection -> repository.observeItems(selection.buildingId, selection.categoryId));
+                selection -> repository.observeItems(selection.buildingId, selection.categoryId,
+                        selection.searchText));
         refresh();
     }
 
@@ -51,13 +52,36 @@ public final class MainViewModel extends AndroidViewModel {
         return current == null ? null : current.categoryId;
     }
 
+    public String getSearchText() {
+        Filters current = filters.getValue();
+        return current == null ? "" : current.searchText;
+    }
+
+    public void setSearchText(String searchText) {
+        Filters previous = filters.getValue();
+        String query = normalize(searchText);
+        if (previous != null && previous.searchText.equals(query)) return;
+        savedState.set("filter_search", query);
+        filters.setValue(new Filters(getBuildingId(), getCategoryId(), query));
+    }
+
+    public boolean hasActiveFilters() {
+        Filters current = filters.getValue();
+        return current != null && (current.buildingId != null || current.categoryId != null
+                || !current.searchText.isEmpty());
+    }
+
     public void setFilters(String buildingId, String categoryId) {
         Filters previous = filters.getValue();
         if (previous != null && Objects.equals(previous.buildingId, buildingId)
                 && Objects.equals(previous.categoryId, categoryId)) return;
         savedState.set("filter_building", buildingId);
         savedState.set("filter_category", categoryId);
-        filters.setValue(new Filters(buildingId, categoryId));
+        filters.setValue(new Filters(buildingId, categoryId, getSearchText()));
+    }
+
+    private static String normalize(String query) {
+        return query == null ? "" : query.trim();
     }
 
     public void refresh() {
@@ -74,9 +98,11 @@ public final class MainViewModel extends AndroidViewModel {
     private static final class Filters {
         final String buildingId;
         final String categoryId;
-        Filters(String buildingId, String categoryId) {
+        final String searchText;
+        Filters(String buildingId, String categoryId, String searchText) {
             this.buildingId = buildingId;
             this.categoryId = categoryId;
+            this.searchText = normalize(searchText);
         }
     }
 }
