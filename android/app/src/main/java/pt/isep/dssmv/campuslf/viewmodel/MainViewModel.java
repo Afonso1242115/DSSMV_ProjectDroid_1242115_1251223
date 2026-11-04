@@ -7,6 +7,8 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.SavedStateHandle;
 import androidx.lifecycle.Transformations;
+import java.text.DateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
@@ -89,8 +91,17 @@ public final class MainViewModel extends AndroidViewModel {
         if (current != null && current.isRunning()) return;
         operation.setValue(OperationState.running("Refreshing items..."));
         disposables.add(repository.refresh().observeOn(AndroidSchedulers.mainThread())
-                .subscribe(count -> operation.setValue(OperationState.success("Items updated.")),
-                        error -> operation.setValue(OperationState.error(ErrorMessages.describe(error)))));
+                .subscribe(count -> operation.setValue(OperationState.success(
+                                "Items updated (" + count + "). " + lastSyncDescription())),
+                        error -> operation.setValue(OperationState.error(
+                                ErrorMessages.describe(error) + " " + lastSyncDescription()))));
+    }
+
+    private String lastSyncDescription() {
+        long when = repository.getLastSuccessfulRefreshMillis();
+        if (when <= 0) return "No completed full synchronization yet.";
+        return "Last sync: " + DateFormat.getDateTimeInstance(DateFormat.SHORT,
+                DateFormat.SHORT).format(new Date(when)) + ".";
     }
 
     @Override protected void onCleared() { disposables.clear(); }

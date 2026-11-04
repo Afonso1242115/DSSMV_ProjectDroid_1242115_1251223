@@ -1,6 +1,7 @@
 package pt.isep.dssmv.campuslf.data;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import androidx.lifecycle.LiveData;
 import java.io.File;
 import java.io.IOException;
@@ -32,14 +33,19 @@ import retrofit2.HttpException;
 public final class CampusRepository {
     private static final int PAGE_SIZE = 100;
     private static volatile CampusRepository instance;
+    private static final String SYNC_PREFS = "campuslf_sync";
+    private static final String LAST_FULL_SYNC = "last_full_sync_millis";
     private final CampusDao dao;
     private final RestDbService api;
+    private final SharedPreferences syncPreferences;
     private final Scheduler dataScheduler;
     private Single<Integer> currentRefresh;
 
     private CampusRepository(Context context) {
         dao = CampusDatabase.getInstance(context).campusDao();
         api = RestDbClient.service();
+        syncPreferences = context.getApplicationContext()
+                .getSharedPreferences(SYNC_PREFS, Context.MODE_PRIVATE);
         // Serial IO prevents a stale refresh snapshot from overwriting a just-published item.
         dataScheduler = Schedulers.from(Executors.newSingleThreadExecutor(task -> {
             Thread thread = new Thread(task, "campuslf-data");
@@ -62,6 +68,11 @@ public final class CampusRepository {
         return dao.observeItems(buildingId, categoryId, searchQuery);
     }
 
+    /** Zero means that this installation has not completed a full refresh yet. */
+    public long getLastSuccessfulRefreshMillis() {
+        return syncPreferences.getLong(LAST_FULL_SYNC, 0L);
+    }
+
     public LiveData<FoundItemEntity> observeItem(String id) { return dao.observeItem(id); }
     public LiveData<List<BuildingEntity>> observeBuildings() { return dao.observeBuildings(); }
     public LiveData<List<CategoryEntity>> observeCategories() { return dao.observeCategories(); }
@@ -77,6 +88,8 @@ public final class CampusRepository {
                                         List<FoundItemEntity> localItems = ItemMapper.items(items,
                                                 localBuildings, localCategories);
                                         dao.replaceSnapshot(localItems, localBuildings, localCategories);
+                                        syncPreferences.edit()
+                                                .putLong(LAST_FULL_SYNC, System.currentTimeMillis()).apply();
                                         return localItems.size();
                                     })))
                     .subscribeOn(dataScheduler)
