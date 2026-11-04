@@ -96,9 +96,18 @@ public final class AddItemViewModel extends AndroidViewModel {
             publication.setValue(OperationState.error(error.getMessage()));
             return;
         }
+        File photo = new File(draft.photoPath);
+        if (!photo.isFile() || !photo.canRead() || photo.length() == 0) {
+            publication.setValue(OperationState.error(
+                    "Photograph is missing or empty. Take a new photograph before publishing."));
+            return;
+        }
         publication.setValue(OperationState.running("Uploading photograph and publishing item..."));
         disposables.add(repository.publish(draft).observeOn(AndroidSchedulers.mainThread())
                 .subscribe(result -> {
+                    // Uploaded media is now managed by the server; keep no redundant camera file.
+                    new File(draft.photoPath).delete();
+                    state.remove("photo_path");
                     publication.setValue(OperationState.success("Item published."));
                     published.setValue(result);
                 }, error -> publication.setValue(OperationState.error(ErrorMessages.describe(error)))));
