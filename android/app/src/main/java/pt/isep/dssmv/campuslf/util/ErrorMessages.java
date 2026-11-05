@@ -2,6 +2,9 @@ package pt.isep.dssmv.campuslf.util;
 
 import com.google.gson.JsonParseException;
 import java.io.IOException;
+import java.net.ConnectException;
+import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
 import retrofit2.HttpException;
 
 public final class ErrorMessages {
@@ -21,11 +24,18 @@ public final class ErrorMessages {
             return "Unexpected API data. Check the collection fields and lookup types.";
         }
         if (error instanceof IllegalArgumentException) return error.getMessage();
+        if (error instanceof SocketTimeoutException) {
+            return "Request timed out. Check connectivity. Previously saved items remain available.";
+        }
+        if (error instanceof UnknownHostException || error instanceof ConnectException) {
+            return "Network unavailable. Previously saved items remain available offline.";
+        }
         if (error instanceof IOException) {
             String message = error.getMessage();
             if (message != null && (message.startsWith("Configure ") || message.startsWith("Photo ")))
                 return message;
-            return "Connection failed. Cached data is still available. Check the list before resubmitting an item.";
+            return "Connection failed. Saved items may be available offline if already synchronized. "
+                    + "Check the list before resubmitting an item.";
         }
         return "The operation could not be completed. Please try again.";
     }
