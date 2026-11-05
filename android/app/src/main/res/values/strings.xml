@@ -16,6 +16,10 @@
     <string name="save">Save</string>
     <string name="saving">Saving…</string>
     <string name="cancel">Cancel</string>
+    <string name="open_map">Open location in Maps</string>
+    <string name="map_unavailable">No maps application is installed.</string>
+    <string name="share_item">Share item details</string>
+    <string name="share_item_text">Found item: %1$s\nDescription: %2$s\nBuilding: %3$s\nLocation: %4$s\nDate: %5$s</string>
     <string name="back">Back</string>
     <string name="item_saved">Item saved successfully.</string>
     <string name="save_error">Unable to save the item.</string>
