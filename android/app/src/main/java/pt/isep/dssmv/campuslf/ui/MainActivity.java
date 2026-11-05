@@ -49,6 +49,7 @@ public final class MainActivity extends AppCompatActivity {
             @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
             @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
                 viewModel.setSearchText(s.toString());
+                updateEmptyMessage();
             }
             @Override public void afterTextChanged(Editable s) { }
         });
@@ -71,6 +72,7 @@ public final class MainActivity extends AppCompatActivity {
             int size = items == null ? 0 : items.size();
             ((TextView) findViewById(R.id.itemCountText)).setText(
                     getResources().getQuantityString(R.plurals.saved_item_count, size, size));
+            updateEmptyMessage();
         });
         viewModel.getBuildings().observe(this, this::renderBuildings);
         viewModel.getCategories().observe(this, this::renderCategories);
@@ -78,6 +80,7 @@ public final class MainActivity extends AppCompatActivity {
             ((TextView) findViewById(R.id.statusText)).setText(state.message);
             findViewById(R.id.refreshButton).setEnabled(!state.isRunning());
             findViewById(R.id.refreshProgress).setVisibility(state.isRunning() ? View.VISIBLE : View.GONE);
+            updateEmptyMessage();
         });
         AdapterView.OnItemSelectedListener listener = new AdapterView.OnItemSelectedListener() {
             @Override public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -127,10 +130,24 @@ public final class MainActivity extends AppCompatActivity {
             int index = buildingSpinner.getSelectedItemPosition() - 1;
             viewModel.setFilters(index >= 0 && index < buildings.size() ? buildings.get(index).id : null,
                     viewModel.getCategoryId());
+            updateEmptyMessage();
         } else {
             int index = categorySpinner.getSelectedItemPosition() - 1;
             viewModel.setFilters(viewModel.getBuildingId(),
                     index >= 0 && index < categories.size() ? categories.get(index).id : null);
+            updateEmptyMessage();
+        }
+    }
+
+    private void updateEmptyMessage() {
+        TextView empty = findViewById(R.id.emptyListText);
+        if (empty == null || viewModel == null || itemAdapter == null) return;
+        if (viewModel.hasActiveFilters()) {
+            empty.setText(R.string.empty_filtered_list);
+        } else {
+            pt.isep.dssmv.campuslf.viewmodel.OperationState state = viewModel.getOperation().getValue();
+            empty.setText(state != null && state.isRunning()
+                    ? R.string.loading_items : R.string.empty_list);
         }
     }
 }
