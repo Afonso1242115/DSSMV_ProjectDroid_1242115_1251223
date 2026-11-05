@@ -26,6 +26,10 @@
             <TextView android:id="@+id/dateText" style="@style/ListItemText" />
             <TextView style="@style/FieldLabel" android:text="@string/gps_coordinates" />
             <TextView android:id="@+id/coordinatesText" style="@style/ListItemText" />
+            <Button android:id="@+id/openMapButton" style="@style/PrimaryButton"
+                    android:text="@string/open_map" android:visibility="gone" />
+            <Button android:id="@+id/shareItemButton" style="@style/PrimaryButton"
+                    android:text="@string/share_item" />
         </LinearLayout>
         <Button android:id="@+id/refreshButton" style="@style/PrimaryButton" android:text="@string/refresh" />
         <Button android:id="@+id/backButton" style="@style/PrimaryButton" android:text="@string/back" />
