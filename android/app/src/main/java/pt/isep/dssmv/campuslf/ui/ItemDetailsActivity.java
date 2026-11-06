@@ -34,7 +34,7 @@ public final class ItemDetailsActivity extends AppCompatActivity {
             setText(R.id.categoryText, item.categoryName);
             setText(R.id.buildingText, item.buildingName);
             setText(R.id.locationText, item.detailedLocation);
-            setText(R.id.dateText, item.foundDate);
+            setText(R.id.dateText, DateLabels.format(item.foundDate));
             boolean hasGps = item.latitude != null && item.longitude != null;
             setText(R.id.coordinatesText, !hasGps
                     ? getString(R.string.no_coordinates)

@@ -1,49 +1,93 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-            android:layout_width="match_parent" android:layout_height="match_parent" android:fillViewport="true">
+            android:layout_width="match_parent" android:layout_height="match_parent"
+            android:fillViewport="true" android:background="@color/canvas">
     <LinearLayout android:id="@+id/formContent" android:layout_width="match_parent"
-                  android:layout_height="wrap_content" android:orientation="vertical" android:padding="16dp">
-        <TextView style="@style/ScreenTitle" android:text="@string/new_found_item" />
-        <TextView style="@style/FieldLabel" android:labelFor="@+id/titleInput" android:text="@string/title" />
-        <EditText android:id="@id/titleInput" android:layout_width="match_parent"
-                  android:layout_height="48dp" android:inputType="textCapSentences" android:maxLength="80"
-                  android:hint="@string/title_hint" />
-        <TextView style="@style/FieldLabel" android:labelFor="@+id/descriptionInput" android:text="@string/description" />
-        <EditText android:id="@id/descriptionInput" android:layout_width="match_parent"
-                  android:layout_height="100dp" android:gravity="top" android:inputType="textMultiLine|textCapSentences"
-                  android:maxLength="500" android:hint="@string/description_hint" />
-        <TextView style="@style/FieldLabel" android:text="@string/building" />
-        <Spinner android:id="@+id/buildingSpinner" android:layout_width="match_parent"
-                 android:layout_height="48dp" android:contentDescription="@string/building" />
-        <TextView style="@style/FieldLabel" android:text="@string/category" />
-        <Spinner android:id="@+id/categorySpinner" android:layout_width="match_parent"
-                 android:layout_height="48dp" android:contentDescription="@string/category" />
-        <TextView android:id="@+id/lookupStatusText" android:layout_width="match_parent"
-                  android:layout_height="wrap_content" android:accessibilityLiveRegion="polite" />
-        <Button android:id="@+id/reloadReferencesButton" android:layout_width="match_parent"
-                android:layout_height="wrap_content" android:text="@string/reload_choices" />
-        <TextView style="@style/FieldLabel" android:labelFor="@+id/locationInput" android:text="@string/location" />
-        <EditText android:id="@id/locationInput" android:layout_width="match_parent"
-                  android:layout_height="48dp" android:inputType="textCapSentences" android:maxLength="120"
-                  android:hint="@string/location_hint" />
-        <TextView style="@style/FieldLabel" android:text="@string/found_date" />
-        <Button android:id="@+id/dateButton" android:layout_width="match_parent"
-                android:layout_height="wrap_content" android:text="@string/choose_date" />
+                  android:layout_height="wrap_content" android:orientation="vertical"
+                  android:paddingStart="20dp" android:paddingEnd="20dp"
+                  android:paddingTop="8dp" android:paddingBottom="24dp">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                      android:orientation="horizontal" android:gravity="center_vertical">
+            <ImageButton android:id="@+id/formBackButton" style="@style/IconButton"
+                         android:layout_marginStart="-12dp" android:src="@drawable/ic_back"
+                         android:contentDescription="@string/back" />
+            <TextView android:layout_width="0dp" android:layout_weight="1"
+                      android:layout_height="wrap_content" android:text="@string/new_found_item"
+                      android:textSize="20sp" android:fontFamily="sans-serif-medium"
+                      android:textColor="@color/text_primary" />
+        </LinearLayout>
         <ImageView android:id="@+id/photoPreview" android:layout_width="match_parent"
-                   android:layout_height="200dp" android:contentDescription="@string/object_photo"
-                   android:scaleType="centerInside" android:src="@android:drawable/ic_menu_camera" />
-        <Button android:id="@+id/photoButton" android:layout_width="match_parent"
-                android:layout_height="wrap_content" android:text="@string/take_photo" />
-        <TextView style="@style/FieldLabel" android:text="@string/gps_coordinates" />
-        <TextView android:id="@+id/gpsStatusText" android:layout_width="match_parent"
-                  android:layout_height="wrap_content" android:accessibilityLiveRegion="polite" />
-        <Button android:id="@+id/gpsButton" android:layout_width="match_parent"
-                android:layout_height="wrap_content" android:text="@string/get_gps" />
-        <Button android:id="@+id/clearGpsButton" android:layout_width="match_parent"
-                android:layout_height="wrap_content" android:text="@string/clear_gps" />
-        <TextView android:id="@+id/publishStatusText" android:layout_width="match_parent"
-                  android:layout_height="wrap_content" android:paddingTop="12dp" android:accessibilityLiveRegion="polite" />
+                   android:layout_height="180dp" android:layout_marginTop="16dp"
+                   android:background="@drawable/bg_photo" android:clipToOutline="true"
+                   android:contentDescription="@string/object_photo" android:scaleType="centerCrop"
+                   android:src="@drawable/ic_photo_placeholder" />
+        <Button android:id="@+id/photoButton" style="@style/PrimaryButton"
+                android:layout_marginTop="8dp" android:drawableStart="@drawable/ic_camera"
+                android:text="@string/take_photo" />
+        <TextView style="@style/FieldLabel" android:labelFor="@+id/titleInput" android:text="@string/title" />
+        <EditText android:id="@id/titleInput" style="@style/InputField"
+                  android:inputType="textCapSentences" android:maxLength="80"
+                  android:singleLine="true" android:imeOptions="actionNext" android:hint="@string/title_hint" />
+        <TextView style="@style/FieldLabel" android:labelFor="@+id/descriptionInput" android:text="@string/description" />
+        <EditText android:id="@id/descriptionInput" style="@style/InputField"
+                  android:minLines="3" android:gravity="top|start"
+                  android:inputType="textMultiLine|textCapSentences"
+                  android:maxLength="500" android:hint="@string/description_hint" />
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                      android:orientation="horizontal" android:baselineAligned="false">
+            <LinearLayout android:layout_width="0dp" android:layout_weight="1"
+                          android:layout_height="wrap_content" android:orientation="vertical"
+                          android:layout_marginEnd="6dp">
+                <TextView style="@style/FieldLabel" android:text="@string/building"
+                          android:labelFor="@+id/buildingSpinner" />
+                <Spinner android:id="@id/buildingSpinner" style="@style/ChoiceField"
+                         android:contentDescription="@string/building" />
+            </LinearLayout>
+            <LinearLayout android:layout_width="0dp" android:layout_weight="1"
+                          android:layout_height="wrap_content" android:orientation="vertical"
+                          android:layout_marginStart="6dp">
+                <TextView style="@style/FieldLabel" android:text="@string/category"
+                          android:labelFor="@+id/categorySpinner" />
+                <Spinner android:id="@id/categorySpinner" style="@style/ChoiceField"
+                         android:contentDescription="@string/category" />
+            </LinearLayout>
+        </LinearLayout>
+        <TextView android:id="@+id/lookupStatusText" style="@style/StatusText" />
+        <Button android:id="@+id/reloadReferencesButton" style="@style/TextButton"
+                android:drawableStart="@drawable/ic_refresh" android:text="@string/reload_choices" />
+        <TextView style="@style/FieldLabel" android:labelFor="@+id/locationInput" android:text="@string/location" />
+        <EditText android:id="@id/locationInput" style="@style/InputField"
+                  android:inputType="textCapSentences" android:maxLength="120"
+                  android:singleLine="true" android:imeOptions="actionDone" android:hint="@string/location_hint" />
+        <TextView style="@style/FieldLabel" android:text="@string/found_date"
+                  android:labelFor="@+id/dateButton" />
+        <Button android:id="@id/dateButton" style="@style/SecondaryButton"
+                android:layout_marginTop="6dp" android:gravity="center_vertical|start"
+                android:drawableStart="@drawable/ic_calendar" android:drawableEnd="@drawable/ic_chevron_down"
+                android:text="@string/choose_date" />
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                      android:layout_marginTop="20dp" android:padding="16dp"
+                      android:background="@drawable/bg_pink_panel" android:orientation="vertical">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                          android:orientation="horizontal" android:gravity="center_vertical">
+                <TextView android:layout_width="0dp" android:layout_weight="1"
+                          android:layout_height="wrap_content" android:drawableStart="@drawable/ic_pin"
+                          android:drawablePadding="8dp" android:text="@string/gps_location"
+                          android:textSize="15sp" android:fontFamily="sans-serif-medium"
+                          android:textColor="@color/text_primary" android:gravity="center_vertical" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                          android:text="@string/optional" android:textSize="12sp"
+                          android:textColor="@color/text_secondary" />
+            </LinearLayout>
+            <TextView android:id="@+id/gpsStatusText" style="@style/StatusText"
+                      android:textSize="13sp" />
+            <Button android:id="@+id/gpsButton" style="@style/SecondaryButton"
+                    android:layout_marginTop="12dp" android:text="@string/get_gps" />
+            <Button android:id="@+id/clearGpsButton" style="@style/TextButton"
+                    android:text="@string/clear_gps" />
+        </LinearLayout>
+        <TextView android:id="@+id/publishStatusText" style="@style/StatusText" />
         <Button android:id="@+id/saveButton" style="@style/PrimaryButton" android:text="@string/publish" />
-        <Button android:id="@+id/cancelButton" style="@style/PrimaryButton" android:text="@string/cancel" />
+        <Button android:id="@+id/cancelButton" style="@style/TextButton" android:text="@string/cancel" />
     </LinearLayout>
 </ScrollView>

@@ -1,37 +1,93 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-            android:layout_width="match_parent" android:layout_height="match_parent" android:fillViewport="true">
+            android:layout_width="match_parent" android:layout_height="match_parent"
+            android:fillViewport="true" android:background="@color/canvas">
     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
-                  android:orientation="vertical" android:padding="16dp">
-        <TextView style="@style/ScreenTitle" android:text="@string/item_details" />
-        <TextView android:id="@+id/statusText" android:layout_width="match_parent"
-                  android:layout_height="wrap_content" android:paddingTop="8dp" android:accessibilityLiveRegion="polite" />
-        <TextView android:id="@+id/detailsEmptyText" android:layout_width="match_parent"
-                  android:layout_height="wrap_content" android:padding="24dp" android:text="@string/item_not_found" />
+                  android:orientation="vertical" android:paddingStart="20dp"
+                  android:paddingEnd="20dp" android:paddingTop="8dp" android:paddingBottom="24dp">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                      android:orientation="horizontal" android:gravity="center_vertical">
+            <ImageButton android:id="@+id/backButton" style="@style/IconButton"
+                         android:layout_marginStart="-12dp" android:src="@drawable/ic_back"
+                         android:contentDescription="@string/back" />
+            <TextView android:layout_width="0dp" android:layout_weight="1"
+                      android:layout_height="wrap_content" android:text="@string/item_details"
+                      android:textSize="20sp" android:fontFamily="sans-serif-medium"
+                      android:textColor="@color/text_primary" />
+            <ImageButton android:id="@+id/refreshButton" style="@style/IconButton"
+                         android:src="@drawable/ic_refresh" android:contentDescription="@string/refresh" />
+        </LinearLayout>
+        <TextView android:id="@+id/statusText" style="@style/StatusText" />
+        <TextView android:id="@+id/detailsEmptyText" style="@style/BodyText"
+                  android:padding="24dp" android:gravity="center" android:text="@string/item_not_found" />
         <LinearLayout android:id="@+id/detailsContent" android:layout_width="match_parent"
                       android:layout_height="wrap_content" android:orientation="vertical" android:visibility="gone">
             <ImageView android:id="@+id/detailImage" android:layout_width="match_parent"
-                       android:layout_height="220dp" android:scaleType="centerInside"
-                       android:contentDescription="@string/object_photo" />
-            <TextView android:id="@+id/titleText" style="@style/ListItemTitle" />
+                       android:layout_height="220dp" android:layout_marginTop="16dp"
+                       android:background="@drawable/bg_photo" android:clipToOutline="true"
+                       android:scaleType="centerCrop" android:contentDescription="@string/object_photo" />
+            <TextView android:id="@+id/titleText" style="@style/ScreenTitle"
+                      android:textSize="26sp" android:layout_marginTop="20dp" />
+            <TextView android:id="@+id/categoryText" android:layout_width="wrap_content"
+                      android:layout_height="wrap_content" android:layout_marginTop="10dp"
+                      android:background="@drawable/bg_pink_panel" android:drawableStart="@drawable/ic_tag"
+                      android:drawablePadding="6dp" android:gravity="center_vertical"
+                      android:paddingStart="12dp" android:paddingEnd="12dp"
+                      android:paddingTop="6dp" android:paddingBottom="6dp"
+                      android:textSize="13sp" android:textColor="@color/rose_deep" />
             <TextView style="@style/FieldLabel" android:text="@string/description" />
-            <TextView android:id="@+id/descriptionText" style="@style/ListItemText" />
-            <TextView style="@style/FieldLabel" android:text="@string/building" />
-            <TextView android:id="@+id/buildingText" style="@style/ListItemText" />
-            <TextView style="@style/FieldLabel" android:text="@string/category" />
-            <TextView android:id="@+id/categoryText" style="@style/ListItemText" />
-            <TextView style="@style/FieldLabel" android:text="@string/location" />
-            <TextView android:id="@+id/locationText" style="@style/ListItemText" />
-            <TextView style="@style/FieldLabel" android:text="@string/found_date" />
-            <TextView android:id="@+id/dateText" style="@style/ListItemText" />
-            <TextView style="@style/FieldLabel" android:text="@string/gps_coordinates" />
-            <TextView android:id="@+id/coordinatesText" style="@style/ListItemText" />
-            <Button android:id="@+id/openMapButton" style="@style/PrimaryButton"
-                    android:text="@string/open_map" android:visibility="gone" />
-            <Button android:id="@+id/shareItemButton" style="@style/PrimaryButton"
-                    android:text="@string/share_item" />
+            <TextView android:id="@+id/descriptionText" style="@style/BodyText"
+                      android:layout_marginTop="6dp" />
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                          android:orientation="vertical" android:layout_marginTop="20dp"
+                          android:background="@drawable/bg_card" android:elevation="1dp" android:padding="16dp">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                              android:orientation="horizontal" android:gravity="center_vertical">
+                    <TextView android:layout_width="120dp" android:layout_height="wrap_content"
+                              android:drawableStart="@drawable/ic_building" android:drawablePadding="8dp"
+                              android:gravity="center_vertical" android:text="@string/building"
+                              android:textSize="14sp" android:textColor="@color/text_secondary" />
+                    <TextView android:id="@+id/buildingText" style="@style/BodyText"
+                              android:layout_width="0dp" android:layout_weight="1" android:gravity="end" />
+                </LinearLayout>
+                <View android:layout_width="match_parent" android:layout_height="1dp"
+                      android:layout_marginTop="14dp" android:layout_marginBottom="14dp"
+                      android:background="@color/card_border" android:importantForAccessibility="no" />
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                              android:orientation="horizontal" android:gravity="center_vertical">
+                    <TextView android:layout_width="120dp" android:layout_height="wrap_content"
+                              android:drawableStart="@drawable/ic_pin" android:drawablePadding="8dp"
+                              android:gravity="center_vertical" android:text="@string/location"
+                              android:textSize="14sp" android:textColor="@color/text_secondary" />
+                    <TextView android:id="@+id/locationText" style="@style/BodyText"
+                              android:layout_width="0dp" android:layout_weight="1" android:gravity="end" />
+                </LinearLayout>
+                <View android:layout_width="match_parent" android:layout_height="1dp"
+                      android:layout_marginTop="14dp" android:layout_marginBottom="14dp"
+                      android:background="@color/card_border" android:importantForAccessibility="no" />
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                              android:orientation="horizontal" android:gravity="center_vertical">
+                    <TextView android:layout_width="120dp" android:layout_height="wrap_content"
+                              android:drawableStart="@drawable/ic_calendar" android:drawablePadding="8dp"
+                              android:gravity="center_vertical" android:text="@string/found_date"
+                              android:textSize="14sp" android:textColor="@color/text_secondary" />
+                    <TextView android:id="@+id/dateText" style="@style/BodyText"
+                              android:layout_width="0dp" android:layout_weight="1" android:gravity="end" />
+                </LinearLayout>
+            </LinearLayout>
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                          android:orientation="vertical" android:layout_marginTop="20dp"
+                          android:background="@drawable/bg_pink_panel" android:padding="16dp">
+                <TextView style="@style/BodyText" android:drawableStart="@drawable/ic_pin"
+                          android:drawablePadding="8dp" android:gravity="center_vertical"
+                          android:text="@string/gps_location" android:fontFamily="sans-serif-medium" />
+                <TextView android:id="@+id/coordinatesText" style="@style/BodyText"
+                          android:layout_marginTop="8dp" android:textSize="14sp" />
+                <Button android:id="@+id/openMapButton" style="@style/PrimaryButton"
+                        android:text="@string/open_map" android:visibility="gone" />
+            </LinearLayout>
+            <Button android:id="@+id/shareItemButton" style="@style/SecondaryButton"
+                    android:drawableStart="@drawable/ic_share" android:text="@string/share_item" />
         </LinearLayout>
-        <Button android:id="@+id/refreshButton" style="@style/PrimaryButton" android:text="@string/refresh" />
-        <Button android:id="@+id/backButton" style="@style/PrimaryButton" android:text="@string/back" />
     </LinearLayout>
 </ScrollView>
