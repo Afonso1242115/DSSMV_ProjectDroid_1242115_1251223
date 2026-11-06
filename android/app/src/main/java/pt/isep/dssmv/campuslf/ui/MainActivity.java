@@ -118,8 +118,8 @@ public final class MainActivity extends AppCompatActivity {
 
     private void setChoices(Spinner spinner, List<String> labels, int selected) {
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_spinner_item, labels);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                R.layout.spinner_selected_item, labels);
+        adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
         spinner.setAdapter(adapter);
         spinner.setSelection(selected, false);
     }

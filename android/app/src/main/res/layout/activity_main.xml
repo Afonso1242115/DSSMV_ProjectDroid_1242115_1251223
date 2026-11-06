@@ -1,40 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent" android:layout_height="match_parent"
-              android:orientation="vertical" android:padding="16dp">
-    <TextView style="@style/ScreenTitle" android:text="@string/found_items" />
-    <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
-              android:layout_marginTop="6dp" android:text="@string/saved_items_hint" />
-    <EditText android:id="@+id/searchInput" android:layout_width="match_parent"
-              android:layout_height="wrap_content" android:minHeight="48dp"
-              android:layout_marginTop="12dp" android:singleLine="true"
-              android:inputType="text" android:imeOptions="actionSearch"
-              android:hint="@string/search_items_hint" />
-    <TextView style="@style/FieldLabel" android:text="@string/building" />
-    <Spinner android:id="@+id/buildingSpinner" android:layout_width="match_parent"
-             android:layout_height="48dp" android:contentDescription="@string/building" />
-    <TextView style="@style/FieldLabel" android:text="@string/category" />
-    <Spinner android:id="@+id/categorySpinner" android:layout_width="match_parent"
-             android:layout_height="48dp" android:contentDescription="@string/category" />
+              android:orientation="vertical" android:background="@color/canvas"
+              android:paddingStart="20dp" android:paddingEnd="20dp" android:paddingTop="8dp">
     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
-                  android:orientation="horizontal">
-        <Button android:id="@+id/refreshButton" android:layout_width="0dp"
-                android:layout_weight="1" android:layout_height="wrap_content" android:text="@string/refresh" />
-        <Button android:id="@+id/addItemButton" android:layout_width="0dp"
-                android:layout_weight="1" android:layout_height="wrap_content" android:text="@string/add_item" />
+                  android:orientation="horizontal" android:gravity="center_vertical">
+        <TextView android:layout_width="0dp" android:layout_weight="1"
+                  android:layout_height="wrap_content" android:text="@string/app_name"
+                  android:textSize="20sp" android:fontFamily="sans-serif-medium"
+                  android:textStyle="bold" android:textColor="@color/rose_deep" />
+        <ImageButton android:id="@+id/refreshButton" style="@style/IconButton"
+                     android:src="@drawable/ic_refresh" android:contentDescription="@string/refresh" />
     </LinearLayout>
+    <TextView style="@style/ScreenTitle" android:layout_marginTop="12dp"
+              android:text="@string/found_items" />
+    <TextView style="@style/BodyText" android:layout_marginTop="4dp"
+              android:textColor="@color/text_secondary" android:text="@string/browse_subtitle" />
+    <EditText android:id="@+id/searchInput" style="@style/InputField"
+              android:layout_marginTop="20dp" android:singleLine="true"
+              android:inputType="text" android:imeOptions="actionSearch"
+              android:drawableStart="@drawable/ic_search" android:drawablePadding="10dp"
+              android:hint="@string/search_items_hint" />
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                  android:orientation="horizontal" android:baselineAligned="false">
+        <LinearLayout android:layout_width="0dp" android:layout_weight="1"
+                      android:layout_height="wrap_content" android:orientation="vertical"
+                      android:layout_marginEnd="6dp">
+            <TextView style="@style/FieldLabel" android:text="@string/building"
+                      android:labelFor="@+id/buildingSpinner" />
+            <Spinner android:id="@id/buildingSpinner" style="@style/ChoiceField"
+                     android:contentDescription="@string/building" />
+        </LinearLayout>
+        <LinearLayout android:layout_width="0dp" android:layout_weight="1"
+                      android:layout_height="wrap_content" android:orientation="vertical"
+                      android:layout_marginStart="6dp">
+            <TextView style="@style/FieldLabel" android:text="@string/category"
+                      android:labelFor="@+id/categorySpinner" />
+            <Spinner android:id="@id/categorySpinner" style="@style/ChoiceField"
+                     android:contentDescription="@string/category" />
+        </LinearLayout>
+    </LinearLayout>
+    <Button android:id="@+id/addItemButton" style="@style/PrimaryButton"
+            android:drawableStart="@drawable/ic_add" android:text="@string/add_item" />
     <ProgressBar android:id="@+id/refreshProgress" style="?android:attr/progressBarStyleHorizontal"
-                 android:layout_width="match_parent" android:layout_height="4dp" android:indeterminate="true"
-                 android:visibility="gone" />
-    <TextView android:id="@+id/statusText" android:layout_width="match_parent"
-              android:layout_height="wrap_content" android:paddingTop="8dp" android:accessibilityLiveRegion="polite" />
-    <TextView android:id="@+id/itemCountText" android:layout_width="match_parent"
-              android:layout_height="wrap_content" android:paddingTop="8dp" />
-    <FrameLayout android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1">
+                 android:layout_width="match_parent" android:layout_height="4dp"
+                 android:layout_marginTop="8dp" android:indeterminate="true"
+                 android:indeterminateTint="@color/rose_deep" android:visibility="gone" />
+    <TextView android:id="@+id/statusText" style="@style/StatusText" />
+    <TextView android:id="@+id/itemCountText" style="@style/FieldLabel"
+              android:layout_marginTop="14dp" android:layout_marginBottom="4dp" />
+    <FrameLayout android:layout_width="match_parent" android:layout_height="0dp"
+                 android:layout_weight="1">
         <ListView android:id="@+id/foundItemsList" android:layout_width="match_parent"
-                  android:layout_height="match_parent" android:dividerHeight="8dp" />
-        <TextView android:id="@+id/emptyListText" android:layout_width="match_parent"
-                  android:layout_height="wrap_content" android:padding="24dp" android:gravity="center"
-                  android:text="@string/empty_list" />
+                  android:layout_height="match_parent" android:divider="@null"
+                  android:dividerHeight="0dp" android:clipToPadding="false"
+                  android:paddingBottom="16dp" android:listSelector="@android:color/transparent" />
+        <TextView android:id="@+id/emptyListText" style="@style/BodyText"
+                  android:layout_gravity="center" android:padding="24dp" android:gravity="center"
+                  android:textColor="@color/text_secondary" android:text="@string/empty_list" />
     </FrameLayout>
 </LinearLayout>
