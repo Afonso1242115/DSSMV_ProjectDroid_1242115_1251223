@@ -2,9 +2,12 @@ package pt.isep.dssmv.campuslf.util;
 
 import com.google.gson.JsonParseException;
 import java.io.IOException;
+import java.io.Reader;
 import java.net.ConnectException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import java.util.Locale;
+import pt.isep.dssmv.campuslf.BuildConfig;
 import retrofit2.HttpException;
 
 public final class ErrorMessages {
@@ -40,6 +43,40 @@ public final class ErrorMessages {
                     + "Check the list before resubmitting an item.";
         }
         return "The operation could not be completed. Please try again.";
+    }
+
+    /** Keeps upload diagnostics in the form so they can be read on the phone itself. */
+    public static String describePhotoUpload(Throwable error, long originalBytes, int jpegBytes) {
+        String message = String.format(Locale.US,
+                "Photo upload failed. Original: %.2f MB. JPEG sent: %.1f kB (%d bytes). %s",
+                originalBytes / 1_000_000.0, jpegBytes / 1_000.0, jpegBytes, describe(error));
+        if (!(error instanceof HttpException)) return message;
+        String reply = serverReply(error);
+        return message + (reply.isEmpty() ? " Server returned no additional error details."
+                : " Server reply: " + reply);
+    }
+
+    /** Reads only a small error body; never includes request headers, keys or camera file paths. */
+    private static String serverReply(Throwable error) {
+        if (!(error instanceof HttpException)) return "";
+        retrofit2.Response<?> response = ((HttpException) error).response();
+        if (response == null || response.errorBody() == null) return "";
+        try (Reader reader = response.errorBody().charStream()) {
+            char[] buffer = new char[4096];
+            int length = 0;
+            while (length < buffer.length) {
+                int read = reader.read(buffer, length, buffer.length - length);
+                if (read <= 0) break;
+                length += read;
+            }
+            String text = new String(buffer, 0, length);
+            String apiKey = BuildConfig.RESTDB_API_KEY;
+            if (!apiKey.isEmpty()) text = text.replace(apiKey, "[redacted]");
+            text = text.replaceAll("<[^>]*>", " ").replaceAll("\\s+", " ").trim();
+            return text.length() > 360 ? text.substring(0, 360) + "…" : text;
+        } catch (IOException | RuntimeException ignored) {
+            return "";
+        }
     }
 
     /** Only the method and path are shown; headers and query parameters may contain credentials. */

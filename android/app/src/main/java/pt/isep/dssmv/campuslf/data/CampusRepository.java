@@ -26,6 +26,7 @@ import pt.isep.dssmv.campuslf.data.remote.RestDbService;
 import pt.isep.dssmv.campuslf.model.PublishDraft;
 import pt.isep.dssmv.campuslf.model.PublishResult;
 import pt.isep.dssmv.campuslf.model.RemoteFoundItem;
+import pt.isep.dssmv.campuslf.util.ErrorMessages;
 import pt.isep.dssmv.campuslf.util.PhotoUtils;
 import retrofit2.HttpException;
 
@@ -131,10 +132,15 @@ public final class CampusRepository {
 
     /** Compress -> upload media -> publish document -> update Room, all on the data worker. */
     public Single<PublishResult> publish(PublishDraft draft) {
-        return Single.fromCallable(() -> PhotoUtils.compressedJpeg(new File(draft.photoPath)))
-                .map(bytes -> MultipartBody.Part.createFormData("myfile", "found-item.jpg",
-                        RequestBody.create(MediaType.parse("image/jpeg"), bytes)))
-                .flatMap(api::uploadPhoto)
+        File cameraFile = new File(draft.photoPath);
+        return Single.fromCallable(() -> PhotoUtils.compressedJpeg(cameraFile))
+                .flatMap(bytes -> {
+                    MultipartBody.Part photo = MultipartBody.Part.createFormData("myfile", "found-item.jpg",
+                            RequestBody.create(MediaType.parse("image/jpeg"), bytes));
+                    return api.uploadPhoto(photo).onErrorResumeNext(error -> Single.error(
+                            new IOException(ErrorMessages.describePhotoUpload(error,
+                                    cameraFile.length(), bytes.length), error)));
+                })
                 .flatMap(upload -> {
                     String photoId = upload.getFirstId();
                     if (photoId == null || photoId.isEmpty()) {
