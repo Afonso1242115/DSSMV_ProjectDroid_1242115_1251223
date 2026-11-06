@@ -29,6 +29,16 @@ if (!restdbBaseUrl.startsWith('https://')) {
     throw new GradleException('restdb.url must use HTTPS')
 }
 
+// Media may be served on a different host without changing the working collection API.
+def restdbMediaBaseUrl = restdbProperties.getProperty(
+        'restdb.mediaUrl', restdbBaseUrl
+).trim()
+if (restdbMediaBaseUrl.isEmpty()) restdbMediaBaseUrl = restdbBaseUrl
+if (!restdbMediaBaseUrl.endsWith('/')) restdbMediaBaseUrl += '/'
+if (!restdbMediaBaseUrl.startsWith('https://')) {
+    throw new GradleException('restdb.mediaUrl must use HTTPS')
+}
+
 def javaString = { String value ->
     groovy.json.JsonOutput.toJson(value)
 }
@@ -47,6 +57,8 @@ android {
 
         buildConfigField 'String', 'RESTDB_BASE_URL',
                 javaString(restdbBaseUrl)
+        buildConfigField 'String', 'RESTDB_MEDIA_BASE_URL',
+                javaString(restdbMediaBaseUrl)
         buildConfigField 'String', 'RESTDB_API_KEY',
                 javaString(restdbApiKey)
     }

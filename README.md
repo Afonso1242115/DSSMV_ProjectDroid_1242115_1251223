@@ -27,6 +27,10 @@ Java, Android, MVVM, Room, LiveData, Retrofit, RxJava e restdb.io.
 
 3. Sincronizar o Gradle e executar a aplicação num emulador ou dispositivo Android (API 26 ou superior).
 
+Se o Media Archive usar outro endereço, a propriedade opcional `restdb.mediaUrl`
+define a sua base HTTPS. Sem essa propriedade, as fotografias usam `restdb.url`.
+O endereço das coleções continua sempre a ser definido por `restdb.url`.
+
 Para compilar a partir da raiz:
 
 - **Windows:** `gradlew.bat :app:assembleDebug`

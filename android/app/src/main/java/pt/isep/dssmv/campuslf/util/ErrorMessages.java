@@ -79,11 +79,11 @@ public final class ErrorMessages {
         }
     }
 
-    /** Only the method and path are shown; headers and query parameters may contain credentials. */
+    /** Shows the host as well as the path, while keeping headers and query parameters private. */
     private static String requestDescription(HttpException error) {
         retrofit2.Response<?> response = error.response();
         if (response == null) return "";
         okhttp3.Request request = response.raw().request();
-        return " for " + request.method() + " " + request.url().encodedPath();
+        return " for " + request.method() + " " + request.url().host() + request.url().encodedPath();
     }
 }

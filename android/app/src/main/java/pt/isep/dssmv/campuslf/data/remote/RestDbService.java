@@ -15,6 +15,7 @@ import retrofit2.http.POST;
 import retrofit2.http.Part;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
+import retrofit2.http.Url;
 
 public interface RestDbService {
     @GET("rest/buildings")
@@ -33,6 +34,6 @@ public interface RestDbService {
     @POST("rest/founditems")
     Single<RemoteFoundItem> createItem(@Body NewFoundItem item);
 
-    @Multipart @POST("media")
-    Single<MediaUploadResponse> uploadPhoto(@Part MultipartBody.Part file);
+    @Multipart @POST
+    Single<MediaUploadResponse> uploadPhoto(@Url String mediaUrl, @Part MultipartBody.Part file);
 }
