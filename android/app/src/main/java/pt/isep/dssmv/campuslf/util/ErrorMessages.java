@@ -12,9 +12,11 @@ public final class ErrorMessages {
 
     public static String describe(Throwable error) {
         if (error instanceof HttpException) {
-            int code = ((HttpException) error).code();
+            HttpException http = (HttpException) error;
+            int code = http.code();
             if (code == 401 || code == 403) return "Access denied (HTTP " + code
-                    + "). Check the API key and its collection permissions.";
+                    + ")" + requestDescription(http)
+                    + ". Check the API key permissions for this operation.";
             if (code == 404) return "The record or collection was not found (HTTP 404).";
             if (code == 429) return "Too many requests (HTTP 429). Wait before refreshing again.";
             if (code == 400) return "The server rejected the fields (HTTP 400). Check the lookup and photo fields.";
@@ -38,5 +40,13 @@ public final class ErrorMessages {
                     + "Check the list before resubmitting an item.";
         }
         return "The operation could not be completed. Please try again.";
+    }
+
+    /** Only the method and path are shown; headers and query parameters may contain credentials. */
+    private static String requestDescription(HttpException error) {
+        retrofit2.Response<?> response = error.response();
+        if (response == null) return "";
+        okhttp3.Request request = response.raw().request();
+        return " for " + request.method() + " " + request.url().encodedPath();
     }
 }
