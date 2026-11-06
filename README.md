@@ -32,8 +32,6 @@ Para compilar a partir da raiz:
 - **Windows:** `gradlew.bat :app:assembleDebug`
 - **macOS/Linux:** `./gradlew :app:assembleDebug`
 
-> Não incluir chaves da API nos commits. Utilizar apenas uma chave com permissões limitadas.
-
 ## Documentação
 
 O relatório académico encontra-se na pasta `Documentation/`.
