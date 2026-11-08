@@ -14,6 +14,7 @@ import pt.isep.dssmv.campuslf.R;
 import pt.isep.dssmv.campuslf.data.local.entity.FoundItemEntity;
 import pt.isep.dssmv.campuslf.util.MediaImages;
 
+// preenche cada linha da lista com os dados e a fotografia do objeto
 public final class FoundItemAdapter extends ArrayAdapter<FoundItemEntity> {
     public FoundItemAdapter(Context context, List<FoundItemEntity> items) { super(context, 0, items); }
 

@@ -11,7 +11,7 @@ import pt.isep.dssmv.campuslf.model.Building;
 import pt.isep.dssmv.campuslf.model.Category;
 import pt.isep.dssmv.campuslf.model.RemoteFoundItem;
 
-/** The HTTP DTOs and the Room rows are deliberately separate representations. */
+// passa os dados recebidos do servidor para o formato usado na base local
 public final class ItemMapper {
     private ItemMapper() { }
 
@@ -46,7 +46,7 @@ public final class ItemMapper {
         return mapItem(source, indexBuildings(buildings), indexCategories(categories));
     }
 
-    /** Pre-index lookups once for every remote page/snapshot. */
+    // prepara os nomes das relações uma vez para os reutilizar em toda a lista
     public static List<FoundItemEntity> items(List<RemoteFoundItem> source,
                                               List<BuildingEntity> buildings,
                                               List<CategoryEntity> categories) {

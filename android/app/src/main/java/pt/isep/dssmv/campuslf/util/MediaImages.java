@@ -8,13 +8,13 @@ import com.bumptech.glide.load.model.LazyHeaders;
 import pt.isep.dssmv.campuslf.BuildConfig;
 import pt.isep.dssmv.campuslf.R;
 
-/** Prefer the photo saved in the record; older Media Archive IDs remain readable. */
+// mostra a fotografia do objeto e aceita imagens do arquivo antigo
 public final class MediaImages {
     private MediaImages() { }
 
     public static void load(ImageView target, String photoId, String photoBase64) {
         if (photoBase64 != null && !photoBase64.isEmpty()) {
-            // Glide decodes the data URL on its worker, just like downloaded images.
+            // carrega a imagem em segundo plano para não bloquear o ecrã
             Glide.with(target).load("data:image/jpeg;base64," + photoBase64)
                     .placeholder(R.drawable.ic_photo_placeholder)
                     .error(R.drawable.ic_photo_unavailable).into(target);

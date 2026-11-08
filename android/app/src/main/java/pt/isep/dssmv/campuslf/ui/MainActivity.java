@@ -23,7 +23,7 @@ import pt.isep.dssmv.campuslf.data.local.entity.BuildingEntity;
 import pt.isep.dssmv.campuslf.data.local.entity.CategoryEntity;
 import pt.isep.dssmv.campuslf.viewmodel.MainViewModel;
 
-/** View only: binds widgets, forwards actions and observes its ViewModel. */
+// liga a lista e os filtros aos dados do ViewModel
 public final class MainActivity extends AppCompatActivity {
     private MainViewModel viewModel;
     private final ActivityResultLauncher<Intent> publisher = registerForActivityResult(
@@ -66,6 +66,7 @@ public final class MainActivity extends AppCompatActivity {
         findViewById(R.id.addItemButton).setOnClickListener(view ->
                 publisher.launch(new Intent(this, AddItemActivity.class)));
 
+        // atualiza a lista sempre que os dados locais mudam
         viewModel.getItems().observe(this, items -> {
             itemAdapter.clear();
             if (items != null) itemAdapter.addAll(items);
@@ -125,7 +126,7 @@ public final class MainActivity extends AppCompatActivity {
     }
 
     private void updateFilter(AdapterView<?> changed) {
-        // Updating one spinner must not clear the other saved filter before its Room query emits.
+        // mantém o outro filtro ao alterar uma das listas
         if (changed == buildingSpinner) {
             int index = buildingSpinner.getSelectedItemPosition() - 1;
             viewModel.setFilters(index >= 0 && index < buildings.size() ? buildings.get(index).id : null,

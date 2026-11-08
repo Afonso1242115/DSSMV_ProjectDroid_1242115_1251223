@@ -8,7 +8,7 @@ import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava3.RxJava3CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-/** Initialization-on-demand holder: one Retrofit and one HTTP client per application process. */
+// reutiliza o mesmo cliente para todos os pedidos ao servidor
 public final class RestDbClient {
     private static final Object REQUEST_LOCK = new Object();
     private static long lastRequestNanos;
@@ -27,6 +27,7 @@ public final class RestDbClient {
                         throw new IOException("Configure restdb.url and restdb.apiKey in the root local.properties.");
                     }
                     throttle();
+                    // junta a chave a cada pedido antes de o enviar
                     return chain.proceed(chain.request().newBuilder()
                             .header("x-apikey", BuildConfig.RESTDB_API_KEY)
                             .header("Accept", "application/json").build());
@@ -34,14 +35,14 @@ public final class RestDbClient {
         private static final Retrofit RETROFIT = new Retrofit.Builder()
                 .baseUrl(BuildConfig.RESTDB_BASE_URL).client(HTTP)
                 .addConverterFactory(GsonConverterFactory.create(RestDbJson.create()))
-                // Synchronous calls stay on the Repository's serialized background scheduler.
+                // executa os pedidos na thread de trabalho definida pelo repositório
                 .addCallAdapterFactory(RxJava3CallAdapterFactory.createSynchronous()).build();
         private static final RestDbService SERVICE = RETROFIT.create(RestDbService.class);
     }
 
     public static RestDbService service() { return Holder.SERVICE; }
 
-    /** Serializes request start times without ever blocking the Android UI thread. */
+    // espaça os pedidos para respeitar o limite da base de dados
     private static void throttle() throws IOException {
         synchronized (REQUEST_LOCK) {
             long wait = 1_100_000_000L - (System.nanoTime() - lastRequestNanos);

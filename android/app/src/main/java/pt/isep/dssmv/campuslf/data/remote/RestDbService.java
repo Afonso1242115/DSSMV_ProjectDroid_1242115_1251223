@@ -2,21 +2,17 @@ package pt.isep.dssmv.campuslf.data.remote;
 
 import java.util.List;
 import io.reactivex.rxjava3.core.Single;
-import okhttp3.MultipartBody;
 import pt.isep.dssmv.campuslf.model.Building;
 import pt.isep.dssmv.campuslf.model.Category;
-import pt.isep.dssmv.campuslf.model.MediaUploadResponse;
 import pt.isep.dssmv.campuslf.model.NewFoundItem;
 import pt.isep.dssmv.campuslf.model.RemoteFoundItem;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
-import retrofit2.http.Multipart;
 import retrofit2.http.POST;
-import retrofit2.http.Part;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
-import retrofit2.http.Url;
 
+// define os pedidos que a aplicação pode fazer à base de dados remota
 public interface RestDbService {
     @GET("rest/buildings")
     Single<List<Building>> getBuildings(@Query("max") int max);
@@ -34,6 +30,4 @@ public interface RestDbService {
     @POST("rest/founditems")
     Single<RemoteFoundItem> createItem(@Body NewFoundItem item);
 
-    @Multipart @POST
-    Single<MediaUploadResponse> uploadPhoto(@Url String mediaUrl, @Part MultipartBody.Part file);
 }

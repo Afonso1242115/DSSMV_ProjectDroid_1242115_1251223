@@ -3,7 +3,7 @@ package pt.isep.dssmv.campuslf;
 import android.app.Application;
 import pt.isep.dssmv.campuslf.data.CampusRepository;
 
-/** Application-scoped access to the Room/Retrofit repository. */
+// disponibiliza o mesmo repositório durante a execução da aplicação
 public final class CampusLfApplication extends Application {
     private CampusRepository campusRepository;
 

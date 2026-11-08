@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+// guarda os edifícios usados no formulário e nos filtros
 @Entity(tableName = "buildings")
 public final class BuildingEntity {
     @PrimaryKey @NonNull public final String id;

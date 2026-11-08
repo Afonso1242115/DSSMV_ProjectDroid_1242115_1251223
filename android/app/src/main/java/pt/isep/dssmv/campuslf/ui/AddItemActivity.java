@@ -42,6 +42,7 @@ import pt.isep.dssmv.campuslf.data.local.entity.CategoryEntity;
 import pt.isep.dssmv.campuslf.viewmodel.AddItemViewModel;
 import pt.isep.dssmv.campuslf.viewmodel.OperationState;
 
+// liga o formulário à câmara e aos pedidos de localização
 public final class AddItemActivity extends AppCompatActivity {
     private AddItemViewModel viewModel;
     private Spinner buildingSpinner;
@@ -87,6 +88,7 @@ public final class AddItemActivity extends AppCompatActivity {
         });
         viewModel.getLocationStatus().observe(this, value ->
                 ((TextView) findViewById(R.id.gpsStatusText)).setText(value));
+        // aguarda o resultado da publicação antes de permitir sair do formulário
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override public void handleOnBackPressed() {
                 if (!viewModel.isPublishing()) finish();
@@ -129,6 +131,7 @@ public final class AddItemActivity extends AppCompatActivity {
         categorySpinner.setOnItemSelectedListener(selectionListener(false));
     }
 
+    // guarda o texto no ViewModel à medida que o utilizador escreve
     private void bindText(int id, String key) {
         EditText input = findViewById(id);
         input.setText(viewModel.getText(key));
@@ -196,6 +199,7 @@ public final class AddItemActivity extends AppCompatActivity {
         picker.show();
     }
 
+    // cria um ficheiro privado onde a câmara vai guardar a fotografia
     private void takePhoto() {
         try {
             File directory = new File(getFilesDir(), "photos");
@@ -227,6 +231,7 @@ public final class AddItemActivity extends AppCompatActivity {
         return ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED;
     }
 
+    // pede uma localização atual usando o fornecedor disponível
     private void requestLocation() {
         LocationManager manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         if (manager == null) {
@@ -256,6 +261,7 @@ public final class AddItemActivity extends AppCompatActivity {
         }
     }
 
+    // cancela a localização quando o ecrã deixa de estar visível
     @Override protected void onStop() {
         if (locationCancellation != null) {
             locationCancellation.cancel();

@@ -5,7 +5,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Locale;
 
-/** Formats display labels only; the API and saved form state keep their ISO dates. */
+// formata a data para o ecrã sem alterar o valor enviado ao servidor
 final class DateLabels {
     private DateLabels() { }
 

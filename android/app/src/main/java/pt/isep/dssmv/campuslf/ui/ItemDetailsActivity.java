@@ -16,6 +16,7 @@ import pt.isep.dssmv.campuslf.data.local.entity.FoundItemEntity;
 import pt.isep.dssmv.campuslf.util.MediaImages;
 import pt.isep.dssmv.campuslf.viewmodel.ItemDetailsViewModel;
 
+// mostra os detalhes do objeto e as ações de mapa e partilha
 public final class ItemDetailsActivity extends AppCompatActivity {
     public static final String EXTRA_ITEM_ID = ItemDetailsViewModel.ITEM_ID_KEY;
 
@@ -50,6 +51,7 @@ public final class ItemDetailsActivity extends AppCompatActivity {
         });
     }
 
+    // abre as coordenadas na aplicação de mapas
     private void openMap(FoundItemEntity item) {
         if (item.latitude == null || item.longitude == null) return;
         String point = String.format(Locale.US, "%.6f,%.6f", item.latitude, item.longitude);
@@ -61,6 +63,7 @@ public final class ItemDetailsActivity extends AppCompatActivity {
         }
     }
 
+    // prepara o texto apresentado no menu de partilha
     private void shareItem(FoundItemEntity item) {
         String message = getString(R.string.share_item_text, item.title,
                 item.description, item.buildingName, item.detailedLocation, item.foundDate);

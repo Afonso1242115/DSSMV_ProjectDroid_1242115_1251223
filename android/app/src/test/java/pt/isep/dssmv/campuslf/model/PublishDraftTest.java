@@ -13,10 +13,11 @@ public final class PublishDraftTest {
     @Test public void trimsFieldsAndCreatesLookupLists() {
         PublishDraft value = draft("  Blue headphones  ", LocalDate.now().toString(), "/tmp/photo.jpg");
         assertEquals("Blue headphones", value.title);
-        NewFoundItem posted = value.withPhotoId("media-1");
+        NewFoundItem posted = value.withPhotoBase64("photo-data");
         assertEquals("building-f", posted.getBuilding().get(0));
         assertEquals("electronics", posted.getCategory().get(0));
-        assertEquals("media-1", posted.getPhotos().get(0));
+        assertEquals("photo-data", posted.getPhotoBase64());
+        assertTrue(posted.getPhotos().isEmpty());
     }
 
     @Test(expected = IllegalArgumentException.class)

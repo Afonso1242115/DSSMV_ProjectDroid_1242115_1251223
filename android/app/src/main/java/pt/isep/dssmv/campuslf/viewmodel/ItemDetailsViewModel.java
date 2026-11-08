@@ -13,6 +13,7 @@ import pt.isep.dssmv.campuslf.data.CampusRepository;
 import pt.isep.dssmv.campuslf.data.local.entity.FoundItemEntity;
 import pt.isep.dssmv.campuslf.util.ErrorMessages;
 
+// carrega e atualiza os dados do objeto selecionado
 public final class ItemDetailsViewModel extends AndroidViewModel {
     public static final String ITEM_ID_KEY = "item_id";
     private final CampusRepository repository;
@@ -43,5 +44,6 @@ public final class ItemDetailsViewModel extends AndroidViewModel {
                         error -> operation.setValue(OperationState.error(ErrorMessages.describe(error)))));
     }
 
+    // deixa de observar os pedidos quando o ViewModel é destruído
     @Override protected void onCleared() { disposables.clear(); }
 }

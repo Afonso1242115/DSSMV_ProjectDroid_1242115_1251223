@@ -27,7 +27,7 @@ import pt.isep.dssmv.campuslf.model.RemoteFoundItem;
 import pt.isep.dssmv.campuslf.util.PhotoUtils;
 import retrofit2.HttpException;
 
-/** Coordinates the remote API and local cache. Activities never access either source directly. */
+// coordena os pedidos ao servidor e os dados guardados no telemóvel
 public final class CampusRepository {
     private static final int PAGE_SIZE = 100;
     private static volatile CampusRepository instance;
@@ -44,7 +44,7 @@ public final class CampusRepository {
         api = RestDbClient.service();
         syncPreferences = context.getApplicationContext()
                 .getSharedPreferences(SYNC_PREFS, Context.MODE_PRIVATE);
-        // Serial IO prevents a stale refresh snapshot from overwriting a just-published item.
+        // trata os dados por ordem para uma atualização não apagar um objeto acabado de publicar
         dataScheduler = Schedulers.from(Executors.newSingleThreadExecutor(task -> {
             Thread thread = new Thread(task, "campuslf-data");
             thread.setDaemon(true);
@@ -66,7 +66,7 @@ public final class CampusRepository {
         return dao.observeItems(buildingId, categoryId, searchQuery);
     }
 
-    /** Zero means that this installation has not completed a full refresh yet. */
+    // o valor fica a zero até terminar a primeira atualização completa
     public long getLastSuccessfulRefreshMillis() {
         return syncPreferences.getLong(LAST_FULL_SYNC, 0L);
     }
@@ -75,9 +75,10 @@ public final class CampusRepository {
     public LiveData<List<BuildingEntity>> observeBuildings() { return dao.observeBuildings(); }
     public LiveData<List<CategoryEntity>> observeCategories() { return dao.observeCategories(); }
 
-    /** Room remains the source observed by the UI, even after a network refresh. */
+    // o ecrã observa sempre os dados locais mesmo depois de uma atualização do servidor
     public synchronized Single<Integer> refresh() {
         if (currentRefresh == null) {
+            // partilha a atualização em curso para evitar pedidos repetidos
             currentRefresh = api.getBuildings(1000).flatMap(buildings ->
                             api.getCategories(1000).flatMap(categories ->
                                     fetchPages(0, new ArrayList<>()).map(items -> {
@@ -98,6 +99,7 @@ public final class CampusRepository {
         return currentRefresh;
     }
 
+    // pede as páginas seguintes até receber todos os objetos
     private Single<List<RemoteFoundItem>> fetchPages(int skip, List<RemoteFoundItem> all) {
         if (skip >= 100_000) return Single.error(new IOException("The server returned too many pages."));
         return api.getItems(PAGE_SIZE, skip, "_id", 1).flatMap(page -> {
@@ -127,7 +129,7 @@ public final class CampusRepository {
                 }).subscribeOn(dataScheduler);
     }
 
-    /** Compress -> publish one JSON document with the photo -> update Room on the data worker. */
+    // prepara a fotografia e publica o objeto fora da thread do ecrã
     public Single<PublishResult> publish(PublishDraft draft) {
         File cameraFile = new File(draft.photoPath);
         return Single.fromCallable(() -> PhotoUtils.compressedJpeg(cameraFile))
@@ -149,7 +151,7 @@ public final class CampusRepository {
                                 receipt.photoConfirmed ? created.getPhotoBase64() : null,
                                 draft.latitude, draft.longitude));
                     } catch (RuntimeException cacheError) {
-                        // A server-confirmed publication must never be reported as a failed POST.
+                        // mantém o sucesso da publicação mesmo que a gravação local falhe
                         cached = false;
                     }
                     return new PublishResult(created.getId(), cached, receipt.photoConfirmed);

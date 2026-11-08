@@ -1,6 +1,6 @@
 package pt.isep.dssmv.campuslf.model;
 
-/** A successful server publication is distinct from a subsequent local cache write. */
+// indica se o objeto foi publicado e se ficou guardado no telemóvel
 public final class PublishResult {
     public final String recordId;
     public final boolean cached;

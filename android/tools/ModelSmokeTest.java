@@ -1,7 +1,7 @@
 import java.time.LocalDate;
 import pt.isep.dssmv.campuslf.model.FoundItem;
 
-/** Plain Java smoke tests; no Android runtime or third-party dependencies are required. */
+// testa as validações do modelo sem precisar de executar o Android
 public final class ModelSmokeTest {
     private static int passed;
 

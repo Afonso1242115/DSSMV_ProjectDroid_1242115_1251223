@@ -11,12 +11,13 @@ import pt.isep.dssmv.campuslf.data.local.entity.BuildingEntity;
 import pt.isep.dssmv.campuslf.data.local.entity.CategoryEntity;
 import pt.isep.dssmv.campuslf.data.local.entity.FoundItemEntity;
 
-/** One database instance per application process. Never retain an Activity context. */
+// mantém uma única ligação à base de dados local
 @Database(entities = {FoundItemEntity.class, BuildingEntity.class, CategoryEntity.class},
         version = 2, exportSchema = true)
 public abstract class CampusDatabase extends RoomDatabase {
     private static volatile CampusDatabase instance;
 
+    // acrescenta a fotografia aos dados locais sem apagar os registos existentes
     public static final Migration MIGRATION_1_2 = new Migration(1, 2) {
         @Override public void migrate(@NonNull SupportSQLiteDatabase database) {
             database.execSQL("ALTER TABLE found_items_cache ADD COLUMN photoBase64 TEXT");

@@ -5,7 +5,7 @@ import androidx.room.Entity;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
-/** Local cache row. The primary key is the server _id, preventing duplicate cached items. */
+// guarda cada objeto localmente com o identificador recebido do servidor
 @Entity(tableName = "found_items_cache", indices = {@Index("buildingId"), @Index("categoryId")})
 public final class FoundItemEntity {
     @PrimaryKey @NonNull public final String id;

@@ -6,7 +6,6 @@
     <string name="empty_filtered_list">No saved items match your search or filters.</string>
     <string name="loading_items">Loading items from your saved cache…</string>
     <string name="empty_list">No items have been registered yet.</string>
-    <string name="loading">Loading…</string>
     <string name="add_item">Add item</string>
     <string name="new_found_item">New found item</string>
     <string name="item_details">Item details</string>
@@ -16,39 +15,25 @@
     <string name="location">Location</string>
     <string name="found_date">Found date</string>
     <string name="choose_date">Choose Date</string>
-    <string name="save">Save</string>
-    <string name="saving">Saving…</string>
     <string name="cancel">Cancel</string>
     <string name="open_map">Open in Maps</string>
     <string name="map_unavailable">No maps application is installed.</string>
     <string name="share_item">Share item details</string>
     <string name="share_item_text">Found item: %1$s\nDescription: %2$s\nBuilding: %3$s\nLocation: %4$s\nDate: %5$s</string>
     <string name="back">Back</string>
-    <string name="item_saved">Item saved successfully.</string>
-    <string name="save_error">Unable to save the item.</string>
-    <string name="load_error">Unable to load the items.</string>
     <string name="item_not_found">Item not found.</string>
     <plurals name="saved_item_count">
         <item quantity="one">%d saved item</item>
         <item quantity="other">%d saved items</item>
     </plurals>
 
-    <string-array name="item_categories">
-        <item>Keys</item>
-        <item>Electronics</item>
-        <item>Clothing</item>
-        <item>Documents</item>
-        <item>Other</item>
-    </string-array>
     <string name="search_items_hint">Search items or location</string>
     <string name="building">Building</string>
     <string name="all_buildings">All buildings</string>
     <string name="all_categories">All categories</string>
     <string name="refresh">Refresh</string>
     <string name="object_photo">Photograph of the found item</string>
-    <string name="saved_items_hint">Showing saved items. Refresh to fetch updates.</string>
     <string name="no_coordinates">No GPS location was provided.</string>
-    <string name="gps_coordinates">GPS coordinates</string>
     <string name="gps_location">GPS location</string>
     <string name="optional">Optional</string>
     <string name="choose_building">Choose a building</string>

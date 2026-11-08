@@ -2,7 +2,7 @@ package pt.isep.dssmv.campuslf.model;
 
 import java.time.LocalDate;
 
-/** Representa um objeto encontrado no campus e aplica as regras básicas de validação. */
+// valida os dados básicos de um objeto encontrado
 public final class FoundItem {
     public static final int MAX_TITLE_LENGTH = 80;
     public static final int MAX_DESCRIPTION_LENGTH = 500;

@@ -20,6 +20,7 @@ import pt.isep.dssmv.campuslf.data.local.entity.CategoryEntity;
 import pt.isep.dssmv.campuslf.data.local.entity.FoundItemEntity;
 import pt.isep.dssmv.campuslf.util.ErrorMessages;
 
+// mantém a pesquisa e os filtros quando o ecrã é recriado
 public final class MainViewModel extends AndroidViewModel {
     private final CampusRepository repository;
     private final SavedStateHandle savedState;
@@ -35,6 +36,7 @@ public final class MainViewModel extends AndroidViewModel {
         repository = ((CampusLfApplication) application).getCampusRepository();
         filters = new MutableLiveData<>(new Filters(savedState.get("filter_building"),
                 savedState.get("filter_category"), savedState.get("filter_search")));
+        // refaz a consulta local quando a pesquisa ou os filtros mudam
         items = Transformations.switchMap(filters,
                 selection -> repository.observeItems(selection.buildingId, selection.categoryId,
                         selection.searchText));
@@ -104,6 +106,7 @@ public final class MainViewModel extends AndroidViewModel {
                 DateFormat.SHORT).format(new Date(when)) + ".";
     }
 
+    // deixa de observar os pedidos quando o ViewModel é destruído
     @Override protected void onCleared() { disposables.clear(); }
 
     private static final class Filters {

@@ -2,6 +2,7 @@ package pt.isep.dssmv.campuslf.model;
 
 import com.google.gson.annotations.SerializedName;
 
+// representa um edifício recebido da base de dados remota
 public final class Building {
     @SerializedName("_id") private String id;
     @SerializedName(value = "name", alternate = {"building", "building_name", "nome"})

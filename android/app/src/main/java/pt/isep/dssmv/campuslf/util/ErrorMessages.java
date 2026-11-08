@@ -10,6 +10,7 @@ import java.util.Locale;
 import pt.isep.dssmv.campuslf.BuildConfig;
 import retrofit2.HttpException;
 
+// transforma as falhas dos pedidos em mensagens para o utilizador
 public final class ErrorMessages {
     private ErrorMessages() { }
 
@@ -45,17 +46,7 @@ public final class ErrorMessages {
         return "The operation could not be completed. Please try again.";
     }
 
-    /** Keeps upload diagnostics in the form so they can be read on the phone itself. */
-    public static String describePhotoUpload(Throwable error, long originalBytes, int jpegBytes) {
-        String message = String.format(Locale.US,
-                "Photo upload failed. Original: %.2f MB. JPEG sent: %.1f kB (%d bytes). %s",
-                originalBytes / 1_000_000.0, jpegBytes / 1_000.0, jpegBytes, describe(error));
-        if (!(error instanceof HttpException)) return message;
-        String reply = serverReply(error);
-        return message + (reply.isEmpty() ? " Server returned no additional error details."
-                : " Server reply: " + reply);
-    }
-
+    // inclui o tamanho enviado para ajudar a perceber falhas de publicação
     public static String describePhotoPublication(Throwable error, int jpegBytes, int jsonBytes) {
         String message = String.format(Locale.US,
                 "Photo publication failed. JPEG: %d bytes. JSON: %d bytes. %s",
@@ -64,7 +55,7 @@ public final class ErrorMessages {
         return message + (reply.isEmpty() ? "" : " Server reply: " + reply);
     }
 
-    /** Reads only a small error body; never includes request headers, keys or camera file paths. */
+    // lê parte da resposta e esconde a chave caso apareça na mensagem
     private static String serverReply(Throwable error) {
         if (!(error instanceof HttpException)) return "";
         retrofit2.Response<?> response = ((HttpException) error).response();
@@ -87,7 +78,7 @@ public final class ErrorMessages {
         }
     }
 
-    /** Shows the host as well as the path, while keeping headers and query parameters private. */
+    // identifica o pedido que falhou sem mostrar os dados de autenticação
     private static String requestDescription(HttpException error) {
         retrofit2.Response<?> response = error.response();
         if (response == null) return "";

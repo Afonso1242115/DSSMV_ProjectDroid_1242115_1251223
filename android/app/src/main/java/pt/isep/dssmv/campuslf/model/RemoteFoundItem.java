@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName;
 import java.util.Collections;
 import java.util.List;
 
-/** RESTDB Lookup and Image fields are always represented by arrays. */
+// lê os dados do objeto e as suas relações com edifícios e categorias
 public final class RemoteFoundItem {
     @SerializedName("_id") private String id;
     @SerializedName("title") private String title;

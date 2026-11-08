@@ -9,7 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import pt.isep.dssmv.campuslf.model.PhotoLimits;
 
-/** Resize and compress a camera image to fit inside a Base64 JSON document. */
+// reduz a fotografia para caber no registo enviado ao servidor
 public final class PhotoUtils {
     private static final int MAX_DIMENSION = 1024;
     private static final int MIN_DIMENSION = 256;
@@ -17,11 +17,13 @@ public final class PhotoUtils {
 
     public static byte[] compressedJpeg(File file) throws IOException {
         BitmapFactory.Options options = new BitmapFactory.Options();
+        // lê o tamanho da fotografia antes de a carregar para a memória
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(file.getAbsolutePath(), options);
         if (options.outWidth <= 0 || options.outHeight <= 0)
             throw new IOException("Photo file is invalid. Take another photograph.");
         options.inSampleSize = 1;
+        // reduz o tamanho durante a leitura para poupar memória
         while (options.outWidth / options.inSampleSize > MAX_DIMENSION * 2 ||
                 options.outHeight / options.inSampleSize > MAX_DIMENSION * 2)
             options.inSampleSize *= 2;
@@ -30,6 +32,7 @@ public final class PhotoUtils {
         if (decoded == null) throw new IOException("Photo could not be read. Take another photograph.");
         Bitmap photo = decoded;
         try {
+            // corrige a orientação gravada pela câmara
             ExifInterface exif = new ExifInterface(file.getAbsolutePath());
             int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION,
                     ExifInterface.ORIENTATION_NORMAL);
@@ -53,6 +56,7 @@ public final class PhotoUtils {
                 photo = scaled;
             }
             ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+            // reduz a qualidade e depois a resolução até a fotografia caber no limite
             while (true) {
                 for (int quality = 85; quality >= 45; quality -= 10) {
                     bytes.reset();
