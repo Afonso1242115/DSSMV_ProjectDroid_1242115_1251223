@@ -18,6 +18,7 @@ public final class FoundItemEntity {
     @NonNull public final String categoryId;
     @NonNull public final String categoryName;
     public final String photoId;
+    public final String photoBase64;
     public final Double latitude;
     public final Double longitude;
 
@@ -26,7 +27,7 @@ public final class FoundItemEntity {
                            @NonNull String foundDate, @NonNull String buildingId,
                            @NonNull String buildingName, @NonNull String categoryId,
                            @NonNull String categoryName, String photoId,
-                           Double latitude, Double longitude) {
+                           String photoBase64, Double latitude, Double longitude) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -37,6 +38,7 @@ public final class FoundItemEntity {
         this.categoryId = categoryId;
         this.categoryName = categoryName;
         this.photoId = photoId;
+        this.photoBase64 = photoBase64;
         this.latitude = latitude;
         this.longitude = longitude;
     }

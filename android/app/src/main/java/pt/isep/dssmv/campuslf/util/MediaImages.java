@@ -8,11 +8,18 @@ import com.bumptech.glide.load.model.LazyHeaders;
 import pt.isep.dssmv.campuslf.BuildConfig;
 import pt.isep.dssmv.campuslf.R;
 
-/** Photos use the configured media host and restricted key, without placing the key in a URL. */
+/** Prefer the photo saved in the record; older Media Archive IDs remain readable. */
 public final class MediaImages {
     private MediaImages() { }
 
-    public static void load(ImageView target, String photoId) {
+    public static void load(ImageView target, String photoId, String photoBase64) {
+        if (photoBase64 != null && !photoBase64.isEmpty()) {
+            // Glide decodes the data URL on its worker, just like downloaded images.
+            Glide.with(target).load("data:image/jpeg;base64," + photoBase64)
+                    .placeholder(R.drawable.ic_photo_placeholder)
+                    .error(R.drawable.ic_photo_unavailable).into(target);
+            return;
+        }
         if (photoId == null || photoId.isEmpty()) {
             Glide.with(target).clear(target);
             target.setImageResource(R.drawable.ic_photo_placeholder);

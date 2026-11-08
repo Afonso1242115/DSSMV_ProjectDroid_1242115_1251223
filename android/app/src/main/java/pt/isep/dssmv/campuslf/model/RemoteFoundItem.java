@@ -14,6 +14,7 @@ public final class RemoteFoundItem {
     @SerializedName("building") private List<Building> building;
     @SerializedName("category") private List<Category> category;
     @SerializedName("photos") private List<String> photos;
+    @SerializedName("photo_base64") private String photoBase64;
     @SerializedName("latitude") private Double latitude;
     @SerializedName("longitude") private Double longitude;
 
@@ -32,6 +33,7 @@ public final class RemoteFoundItem {
     public String getBuildingId() { return getBuilding().isEmpty() ? null : getBuilding().get(0).getId(); }
     public String getCategoryId() { return getCategory().isEmpty() ? null : getCategory().get(0).getId(); }
     public String getFirstPhotoId() { return getPhotos().isEmpty() ? null : getPhotos().get(0); }
+    public String getPhotoBase64() { return photoBase64; }
     public RemoteFoundItem() { }
     public void setId(String value) { id = value; }
     public void setTitle(String value) { title = value; }
@@ -41,6 +43,7 @@ public final class RemoteFoundItem {
     public void setBuilding(List<Building> value) { building = value; }
     public void setCategory(List<Category> value) { category = value; }
     public void setPhotos(List<String> value) { photos = value; }
+    public void setPhotoBase64(String value) { photoBase64 = value; }
     public void setLatitude(Double value) { latitude = value; }
     public void setLongitude(Double value) { longitude = value; }
 }

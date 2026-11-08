@@ -58,9 +58,20 @@ public final class CampusDaoInstrumentedTest {
         assertEquals("new", result.get(0).id);
     }
 
+    @Test public void retainsFullInlinePhotoAndGpsInOfflineCache() throws InterruptedException {
+        String photo = java.util.Base64.getEncoder().encodeToString(new byte[60_000]);
+        dao.upsertItem(new FoundItemEntity("photo-item", "Keys", "Found keys", "Room F201",
+                "2026-11-01", "b1", "F", "c1", "Keys", null, photo, 41.178, -8.608));
+        FoundItemEntity cached = await(dao.observeItem("photo-item"));
+        assertEquals(photo, cached.photoBase64);
+        assertNull(cached.photoId);
+        assertEquals(41.178, cached.latitude, 0.000001);
+        assertEquals(-8.608, cached.longitude, 0.000001);
+    }
+
     private static FoundItemEntity item(String id, String title, String building, String category) {
         return new FoundItemEntity(id, title, "A found item", "Library", "2026-11-01",
-                building, "Building", category, "Category", null, null, null);
+                building, "Building", category, "Category", null, null, null, null);
     }
 
     private static <T> T await(LiveData<T> source) throws InterruptedException {

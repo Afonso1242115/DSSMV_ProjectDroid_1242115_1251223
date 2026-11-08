@@ -117,8 +117,11 @@ public final class AddItemActivity extends AppCompatActivity {
         });
         viewModel.getPublished().observe(this, result -> {
             if (result == null) return;
-            setResult(RESULT_OK, new Intent().putExtra("refresh_required", !result.cached));
-            Toast.makeText(this, result.cached ? R.string.item_published : R.string.published_refresh,
+            setResult(RESULT_OK, new Intent().putExtra("refresh_required",
+                    !result.cached || !result.photoConfirmed));
+            int message = !result.photoConfirmed ? R.string.published_photo_unconfirmed
+                    : result.cached ? R.string.item_published : R.string.published_refresh;
+            Toast.makeText(this, message,
                     Toast.LENGTH_LONG).show();
             finish();
         });

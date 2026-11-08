@@ -26,4 +26,13 @@ public final class RestDbJsonTest {
         assertEquals("b1", item.getBuildingId());
         assertEquals("c1", item.getCategoryId());
     }
+
+    @Test public void readsInlinePhotoAlongsideOptionalGps() {
+        RemoteFoundItem item = gson.fromJson("{\"_id\":\"item3\",\"photo_base64\":\"encoded-jpeg\","
+                + "\"latitude\":41.178,\"longitude\":-8.608}", RemoteFoundItem.class);
+        assertEquals("encoded-jpeg", item.getPhotoBase64());
+        assertTrue(item.getPhotos().isEmpty());
+        assertEquals(41.178, item.getLatitude(), 0.000001);
+        assertEquals(-8.608, item.getLongitude(), 0.000001);
+    }
 }
