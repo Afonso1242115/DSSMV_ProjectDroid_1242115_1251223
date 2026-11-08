@@ -55,6 +55,7 @@
     <string name="choose_category">Choose a category</string>
     <string name="item_published">Item published successfully.</string>
     <string name="published_refresh">Item published. Refresh the list to download it.</string>
+    <string name="published_photo_unconfirmed">Item created, but the photograph was not confirmed. Check the photo_base64 field in restdb before publishing again.</string>
     <string name="camera_unavailable">The camera is unavailable. Please try again.</string>
     <string name="take_photo">Take photograph</string>
     <string name="publish">Publish item</string>

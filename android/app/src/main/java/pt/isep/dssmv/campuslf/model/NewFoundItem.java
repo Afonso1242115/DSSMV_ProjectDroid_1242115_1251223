@@ -13,6 +13,7 @@ public final class NewFoundItem {
     private List<String> building;
     private List<String> category;
     private List<String> photos;
+    @SerializedName("photo_base64") private String photoBase64;
     private Double latitude;
     private Double longitude;
 
@@ -38,6 +39,7 @@ public final class NewFoundItem {
     public List<String> getBuilding() { return building; }
     public List<String> getCategory() { return category; }
     public List<String> getPhotos() { return photos; }
+    public String getPhotoBase64() { return photoBase64; }
     public Double getLatitude() { return latitude; }
     public Double getLongitude() { return longitude; }
     public void setTitle(String value) { title = value; }
@@ -47,6 +49,7 @@ public final class NewFoundItem {
     public void setBuilding(List<String> value) { building = value; }
     public void setCategory(List<String> value) { category = value; }
     public void setPhotos(List<String> value) { photos = value; }
+    public void setPhotoBase64(String value) { photoBase64 = value; }
     public void setLatitude(Double value) { latitude = value; }
     public void setLongitude(Double value) { longitude = value; }
 }

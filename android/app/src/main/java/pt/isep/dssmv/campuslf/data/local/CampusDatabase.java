@@ -1,18 +1,27 @@
 package pt.isep.dssmv.campuslf.data.local;
 
 import android.content.Context;
+import androidx.annotation.NonNull;
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
+import androidx.room.migration.Migration;
+import androidx.sqlite.db.SupportSQLiteDatabase;
 import pt.isep.dssmv.campuslf.data.local.entity.BuildingEntity;
 import pt.isep.dssmv.campuslf.data.local.entity.CategoryEntity;
 import pt.isep.dssmv.campuslf.data.local.entity.FoundItemEntity;
 
 /** One database instance per application process. Never retain an Activity context. */
 @Database(entities = {FoundItemEntity.class, BuildingEntity.class, CategoryEntity.class},
-        version = 1, exportSchema = true)
+        version = 2, exportSchema = true)
 public abstract class CampusDatabase extends RoomDatabase {
     private static volatile CampusDatabase instance;
+
+    public static final Migration MIGRATION_1_2 = new Migration(1, 2) {
+        @Override public void migrate(@NonNull SupportSQLiteDatabase database) {
+            database.execSQL("ALTER TABLE found_items_cache ADD COLUMN photoBase64 TEXT");
+        }
+    };
 
     public abstract CampusDao campusDao();
 
@@ -21,7 +30,8 @@ public abstract class CampusDatabase extends RoomDatabase {
             synchronized (CampusDatabase.class) {
                 if (instance == null) {
                     instance = Room.databaseBuilder(context.getApplicationContext(),
-                            CampusDatabase.class, "campuslf_room.db").build();
+                            CampusDatabase.class, "campuslf_room.db")
+                            .addMigrations(MIGRATION_1_2).build();
                 }
             }
         }

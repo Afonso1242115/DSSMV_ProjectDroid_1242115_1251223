@@ -12,10 +12,6 @@ import io.reactivex.rxjava3.core.Completable;
 import io.reactivex.rxjava3.core.Scheduler;
 import io.reactivex.rxjava3.core.Single;
 import io.reactivex.rxjava3.schedulers.Schedulers;
-import okhttp3.MediaType;
-import okhttp3.MultipartBody;
-import okhttp3.RequestBody;
-import pt.isep.dssmv.campuslf.BuildConfig;
 import pt.isep.dssmv.campuslf.data.local.CampusDao;
 import pt.isep.dssmv.campuslf.data.local.CampusDatabase;
 import pt.isep.dssmv.campuslf.data.local.ItemMapper;
@@ -23,11 +19,11 @@ import pt.isep.dssmv.campuslf.data.local.entity.BuildingEntity;
 import pt.isep.dssmv.campuslf.data.local.entity.CategoryEntity;
 import pt.isep.dssmv.campuslf.data.local.entity.FoundItemEntity;
 import pt.isep.dssmv.campuslf.data.remote.RestDbClient;
+import pt.isep.dssmv.campuslf.data.remote.InlinePhotoPublisher;
 import pt.isep.dssmv.campuslf.data.remote.RestDbService;
 import pt.isep.dssmv.campuslf.model.PublishDraft;
 import pt.isep.dssmv.campuslf.model.PublishResult;
 import pt.isep.dssmv.campuslf.model.RemoteFoundItem;
-import pt.isep.dssmv.campuslf.util.ErrorMessages;
 import pt.isep.dssmv.campuslf.util.PhotoUtils;
 import retrofit2.HttpException;
 
@@ -131,45 +127,32 @@ public final class CampusRepository {
                 }).subscribeOn(dataScheduler);
     }
 
-    /** Compress -> upload media -> publish document -> update Room, all on the data worker. */
+    /** Compress -> publish one JSON document with the photo -> update Room on the data worker. */
     public Single<PublishResult> publish(PublishDraft draft) {
         File cameraFile = new File(draft.photoPath);
         return Single.fromCallable(() -> PhotoUtils.compressedJpeg(cameraFile))
-                .flatMap(bytes -> {
-                    MultipartBody.Part photo = MultipartBody.Part.createFormData("myfile", "found-item.jpg",
-                            RequestBody.create(MediaType.parse("image/jpeg"), bytes));
-                    return api.uploadPhoto(BuildConfig.RESTDB_MEDIA_BASE_URL + "media", photo)
-                            .onErrorResumeNext(error -> Single.error(
-                            new IOException(ErrorMessages.describePhotoUpload(error,
-                                    cameraFile.length(), bytes.length), error)));
-                })
-                .flatMap(upload -> {
-                    String photoId = upload.getFirstId();
-                    if (photoId == null || photoId.isEmpty()) {
-                        return Single.error(new IOException("Photo upload returned no identifier."));
+                .flatMap(bytes -> InlinePhotoPublisher.publish(api, draft, bytes))
+                .map(receipt -> {
+                    RemoteFoundItem created = receipt.item;
+                    boolean cached = true;
+                    try {
+                        String buildingName = "Not specified";
+                        for (BuildingEntity building : dao.readBuildings())
+                            if (building.id.equals(draft.buildingId)) buildingName = building.name;
+                        String categoryName = "Not specified";
+                        for (CategoryEntity category : dao.readCategories())
+                            if (category.id.equals(draft.categoryId)) categoryName = category.name;
+                        dao.upsertItem(new FoundItemEntity(created.getId(), draft.title,
+                                draft.description, draft.detailedLocation, draft.foundDate,
+                                draft.buildingId, buildingName, draft.categoryId, categoryName,
+                                created.getFirstPhotoId(),
+                                receipt.photoConfirmed ? created.getPhotoBase64() : null,
+                                draft.latitude, draft.longitude));
+                    } catch (RuntimeException cacheError) {
+                        // A server-confirmed publication must never be reported as a failed POST.
+                        cached = false;
                     }
-                    return api.createItem(draft.withPhotoId(photoId)).map(created -> {
-                        if (created.getId() == null || created.getId().isEmpty()) {
-                            throw new IOException("The server response contained no record ID.");
-                        }
-                        boolean cached = true;
-                        try {
-                            String buildingName = "Not specified";
-                            for (BuildingEntity building : dao.readBuildings())
-                                if (building.id.equals(draft.buildingId)) buildingName = building.name;
-                            String categoryName = "Not specified";
-                            for (CategoryEntity category : dao.readCategories())
-                                if (category.id.equals(draft.categoryId)) categoryName = category.name;
-                            dao.upsertItem(new FoundItemEntity(created.getId(), draft.title,
-                                    draft.description, draft.detailedLocation, draft.foundDate,
-                                    draft.buildingId, buildingName, draft.categoryId, categoryName,
-                                    photoId, draft.latitude, draft.longitude));
-                        } catch (RuntimeException cacheError) {
-                            // A server-confirmed publication must never be reported as a failed POST.
-                            cached = false;
-                        }
-                        return new PublishResult(created.getId(), cached);
-                    });
+                    return new PublishResult(created.getId(), cached, receipt.photoConfirmed);
                 }).subscribeOn(dataScheduler);
     }
 }

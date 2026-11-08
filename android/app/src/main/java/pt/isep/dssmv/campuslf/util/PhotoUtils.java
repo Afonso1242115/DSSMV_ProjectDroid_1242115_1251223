@@ -7,11 +7,12 @@ import androidx.exifinterface.media.ExifInterface;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import pt.isep.dssmv.campuslf.model.PhotoLimits;
 
-/** Resize and compress the image to fit the restdb.io free-tier file limit. */
+/** Resize and compress a camera image to fit inside a Base64 JSON document. */
 public final class PhotoUtils {
-    private static final int MAX_DIMENSION = 1280;
-    private static final int MAX_BYTES = 950_000;
+    private static final int MAX_DIMENSION = 1024;
+    private static final int MIN_DIMENSION = 256;
     private PhotoUtils() { }
 
     public static byte[] compressedJpeg(File file) throws IOException {
@@ -51,13 +52,26 @@ public final class PhotoUtils {
                 if (scaled != photo) photo.recycle();
                 photo = scaled;
             }
-            for (int quality = 85; quality >= 35; quality -= 10) {
-                ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-                if (!photo.compress(Bitmap.CompressFormat.JPEG, quality, bytes))
-                    throw new IOException("Photo could not be compressed.");
-                if (bytes.size() <= MAX_BYTES) return bytes.toByteArray();
+            ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+            while (true) {
+                for (int quality = 85; quality >= 45; quality -= 10) {
+                    bytes.reset();
+                    if (!photo.compress(Bitmap.CompressFormat.JPEG, quality, bytes))
+                        throw new IOException("Photo could not be compressed.");
+                    if (bytes.size() <= PhotoLimits.MAX_JPEG_BYTES) return bytes.toByteArray();
+                }
+                int longest = Math.max(photo.getWidth(), photo.getHeight());
+                if (longest <= MIN_DIMENSION) {
+                    throw new IOException("Photo is too large. Take another photograph.");
+                }
+                int next = Math.max(MIN_DIMENSION, Math.round(longest * 0.75f));
+                float ratio = (float) next / longest;
+                Bitmap scaled = Bitmap.createScaledBitmap(photo,
+                        Math.max(1, Math.round(photo.getWidth() * ratio)),
+                        Math.max(1, Math.round(photo.getHeight() * ratio)), true);
+                if (scaled != photo) photo.recycle();
+                photo = scaled;
             }
-            throw new IOException("Photo is too large. Take another photograph.");
         } finally {
             if (!photo.isRecycled()) photo.recycle();
         }

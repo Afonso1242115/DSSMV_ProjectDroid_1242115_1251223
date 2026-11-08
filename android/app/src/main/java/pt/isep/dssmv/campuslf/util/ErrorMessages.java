@@ -56,6 +56,14 @@ public final class ErrorMessages {
                 : " Server reply: " + reply);
     }
 
+    public static String describePhotoPublication(Throwable error, int jpegBytes, int jsonBytes) {
+        String message = String.format(Locale.US,
+                "Photo publication failed. JPEG: %d bytes. JSON: %d bytes. %s",
+                jpegBytes, jsonBytes, describe(error));
+        String reply = serverReply(error);
+        return message + (reply.isEmpty() ? "" : " Server reply: " + reply);
+    }
+
     /** Reads only a small error body; never includes request headers, keys or camera file paths. */
     private static String serverReply(Throwable error) {
         if (!(error instanceof HttpException)) return "";
