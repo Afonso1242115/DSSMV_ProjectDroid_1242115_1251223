@@ -27,9 +27,9 @@ public final class FoundItemAdapter extends ArrayAdapter<FoundItemEntity> {
             ((TextView) row.findViewById(R.id.itemLocationText)).setText(
                     getContext().getString(R.string.item_location_format,
                             item.buildingName, item.detailedLocation));
-            ((TextView) row.findViewById(R.id.itemDateText)).setText(item.foundDate);
+            ((TextView) row.findViewById(R.id.itemDateText)).setText(DateLabels.format(item.foundDate));
             ImageView image = row.findViewById(R.id.itemImage);
-            MediaImages.load(image, item.photoId);
+            MediaImages.load(image, item.photoId, item.photoBase64);
         }
         return row;
     }

@@ -1,6 +1,7 @@
 package pt.isep.dssmv.campuslf.model;
 
 import java.time.LocalDate;
+import java.util.Collections;
 
 /** Validated publication data. Camera and GPS values are supplied by the View. */
 public final class PublishDraft {
@@ -57,5 +58,13 @@ public final class PublishDraft {
         return new NewFoundItem(title, description, detailedLocation, foundDate,
                 buildingId, categoryId, required(photoId, "The upload returned no photo ID."),
                 latitude, longitude);
+    }
+
+    public NewFoundItem withPhotoBase64(String photoBase64) {
+        NewFoundItem item = new NewFoundItem(title, description, detailedLocation, foundDate,
+                buildingId, categoryId, null, latitude, longitude);
+        item.setPhotos(Collections.emptyList());
+        item.setPhotoBase64(required(photoBase64, "The photograph is empty."));
+        return item;
     }
 }

@@ -68,7 +68,8 @@ public final class ItemMapper {
         String categoryName = categoryNames.getOrDefault(categoryId, item.getCategoryName());
         return new FoundItemEntity(requireId(item.getId()), item.getTitle(), item.getDescription(),
                 item.getDetailedLocation(), item.getFoundDate(), buildingId, buildingName,
-                categoryId, categoryName, item.getFirstPhotoId(), item.getLatitude(), item.getLongitude());
+                categoryId, categoryName, item.getFirstPhotoId(), item.getPhotoBase64(),
+                item.getLatitude(), item.getLongitude());
     }
 
     private static Map<String, String> indexBuildings(List<BuildingEntity> buildings) {

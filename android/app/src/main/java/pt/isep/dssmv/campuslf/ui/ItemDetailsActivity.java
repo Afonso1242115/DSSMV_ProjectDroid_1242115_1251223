@@ -34,7 +34,7 @@ public final class ItemDetailsActivity extends AppCompatActivity {
             setText(R.id.categoryText, item.categoryName);
             setText(R.id.buildingText, item.buildingName);
             setText(R.id.locationText, item.detailedLocation);
-            setText(R.id.dateText, item.foundDate);
+            setText(R.id.dateText, DateLabels.format(item.foundDate));
             boolean hasGps = item.latitude != null && item.longitude != null;
             setText(R.id.coordinatesText, !hasGps
                     ? getString(R.string.no_coordinates)
@@ -42,7 +42,7 @@ public final class ItemDetailsActivity extends AppCompatActivity {
             findViewById(R.id.openMapButton).setVisibility(hasGps ? View.VISIBLE : View.GONE);
             findViewById(R.id.openMapButton).setOnClickListener(view -> openMap(item));
             findViewById(R.id.shareItemButton).setOnClickListener(view -> shareItem(item));
-            MediaImages.load((ImageView) findViewById(R.id.detailImage), item.photoId);
+            MediaImages.load((ImageView) findViewById(R.id.detailImage), item.photoId, item.photoBase64);
         });
         viewModel.getOperation().observe(this, state -> {
             setText(R.id.statusText, state.message);

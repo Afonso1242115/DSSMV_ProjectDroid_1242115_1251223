@@ -62,6 +62,8 @@ public final class AddItemActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_item);
         viewModel = new ViewModelProvider(this).get(AddItemViewModel.class);
+        findViewById(R.id.formBackButton).setOnClickListener(view ->
+                getOnBackPressedDispatcher().onBackPressed());
         bindText(R.id.titleInput, "title");
         bindText(R.id.descriptionInput, "description");
         bindText(R.id.locationInput, "location");
@@ -91,9 +93,10 @@ public final class AddItemActivity extends AppCompatActivity {
                 else Toast.makeText(AddItemActivity.this, R.string.wait_for_publication, Toast.LENGTH_SHORT).show();
             }
         });
-        viewModel.getDate().observe(this, value -> ((Button) findViewById(R.id.dateButton)).setText(value));
+        viewModel.getDate().observe(this, value ->
+                ((Button) findViewById(R.id.dateButton)).setText(DateLabels.format(value)));
         viewModel.getPhoto().observe(this, path -> {
-            if (path != null && !path.isEmpty()) Glide.with(this).load(new File(path))
+            if (path != null && !path.isEmpty()) Glide.with(this).load(new File(path)).centerCrop()
                     .into((ImageView) findViewById(R.id.photoPreview));
         });
         viewModel.getBuildings().observe(this, this::renderBuildings);
@@ -114,8 +117,11 @@ public final class AddItemActivity extends AppCompatActivity {
         });
         viewModel.getPublished().observe(this, result -> {
             if (result == null) return;
-            setResult(RESULT_OK, new Intent().putExtra("refresh_required", !result.cached));
-            Toast.makeText(this, result.cached ? R.string.item_published : R.string.published_refresh,
+            setResult(RESULT_OK, new Intent().putExtra("refresh_required",
+                    !result.cached || !result.photoConfirmed));
+            int message = !result.photoConfirmed ? R.string.published_photo_unconfirmed
+                    : result.cached ? R.string.item_published : R.string.published_refresh;
+            Toast.makeText(this, message,
                     Toast.LENGTH_LONG).show();
             finish();
         });
@@ -175,8 +181,8 @@ public final class AddItemActivity extends AppCompatActivity {
     }
 
     private void setChoices(Spinner spinner, List<String> labels, int selected) {
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, labels);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.spinner_selected_item, labels);
+        adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
         spinner.setAdapter(adapter);
         spinner.setSelection(selected, false);
     }

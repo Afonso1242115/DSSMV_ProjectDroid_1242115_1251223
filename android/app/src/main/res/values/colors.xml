@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="canvas">#FFF8FB</color>
+    <color name="surface">#FFFFFF</color>
+    <color name="pink_primary">#F3D6E1</color>
+    <color name="pink_soft">#FBEAF1</color>
+    <color name="pink_disabled">#F6EDF1</color>
+    <color name="rose_deep">#8D405F</color>
+    <color name="rose_ripple">#248D405F</color>
+    <color name="text_primary">#30252D</color>
+    <color name="text_secondary">#74646D</color>
+    <color name="text_disabled">#998B93</color>
+    <color name="field_border">#DDD3D9</color>
+    <color name="card_border">#EEE4E9</color>
+</resources>

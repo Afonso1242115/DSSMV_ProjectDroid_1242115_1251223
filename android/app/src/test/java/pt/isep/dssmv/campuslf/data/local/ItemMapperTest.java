@@ -44,4 +44,26 @@ public final class ItemMapperTest {
         ItemMapper.items(Collections.singletonList(new RemoteFoundItem()),
                 Collections.emptyList(), Collections.emptyList());
     }
+
+    @Test public void keepsInlinePhotoAndGpsAfterRemoteRefresh() {
+        RemoteFoundItem remote = new RemoteFoundItem();
+        remote.setId("item-photo");
+        remote.setPhotoBase64("photo-data");
+        remote.setLatitude(41.178);
+        remote.setLongitude(-8.608);
+        FoundItemEntity mapped = ItemMapper.item(remote, Collections.emptyList(), Collections.emptyList());
+        assertEquals("photo-data", mapped.photoBase64);
+        assertEquals(41.178, mapped.latitude, 0.000001);
+        assertEquals(-8.608, mapped.longitude, 0.000001);
+        assertNull(mapped.photoId);
+    }
+
+    @Test public void keepsLegacyMediaIdWhenInlinePhotoIsAbsent() {
+        RemoteFoundItem remote = new RemoteFoundItem();
+        remote.setId("old-item");
+        remote.setPhotos(Collections.singletonList("legacy-photo"));
+        FoundItemEntity mapped = ItemMapper.item(remote, Collections.emptyList(), Collections.emptyList());
+        assertEquals("legacy-photo", mapped.photoId);
+        assertNull(mapped.photoBase64);
+    }
 }
