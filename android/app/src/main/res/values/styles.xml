@@ -19,6 +19,17 @@
         <item name="android:colorBackground">@color/canvas</item>
     </style>
 
+    <style name="AppBrandIcon">
+        <item name="android:layout_width">48dp</item>
+        <item name="android:layout_height">48dp</item>
+        <item name="android:src">@drawable/ic_launcher_artwork</item>
+        <item name="android:background">@drawable/bg_brand_icon</item>
+        <item name="android:clipToOutline">true</item>
+        <item name="android:scaleType">fitCenter</item>
+        <item name="android:importantForAccessibility">no</item>
+        <item name="android:contentDescription">@null</item>
+    </style>
+
     <style name="ScreenTitle">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
