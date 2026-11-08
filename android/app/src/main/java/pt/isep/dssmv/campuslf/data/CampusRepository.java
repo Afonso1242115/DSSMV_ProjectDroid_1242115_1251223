@@ -15,6 +15,7 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
+import pt.isep.dssmv.campuslf.BuildConfig;
 import pt.isep.dssmv.campuslf.data.local.CampusDao;
 import pt.isep.dssmv.campuslf.data.local.CampusDatabase;
 import pt.isep.dssmv.campuslf.data.local.ItemMapper;
@@ -137,7 +138,8 @@ public final class CampusRepository {
                 .flatMap(bytes -> {
                     MultipartBody.Part photo = MultipartBody.Part.createFormData("myfile", "found-item.jpg",
                             RequestBody.create(MediaType.parse("image/jpeg"), bytes));
-                    return api.uploadPhoto(photo).onErrorResumeNext(error -> Single.error(
+                    return api.uploadPhoto(BuildConfig.RESTDB_MEDIA_BASE_URL + "media", photo)
+                            .onErrorResumeNext(error -> Single.error(
                             new IOException(ErrorMessages.describePhotoUpload(error,
                                     cameraFile.length(), bytes.length), error)));
                 })

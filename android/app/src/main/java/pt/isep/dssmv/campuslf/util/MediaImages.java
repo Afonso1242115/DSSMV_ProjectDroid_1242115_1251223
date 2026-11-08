@@ -8,7 +8,7 @@ import com.bumptech.glide.load.model.LazyHeaders;
 import pt.isep.dssmv.campuslf.BuildConfig;
 import pt.isep.dssmv.campuslf.R;
 
-/** Images use the same configured service and restricted key, without placing the key in a URL. */
+/** Photos use the configured media host and restricted key, without placing the key in a URL. */
 public final class MediaImages {
     private MediaImages() { }
 
@@ -18,7 +18,7 @@ public final class MediaImages {
             target.setImageResource(R.drawable.ic_photo_placeholder);
             return;
         }
-        String url = BuildConfig.RESTDB_BASE_URL + "media/" + Uri.encode(photoId) + "?s=w";
+        String url = BuildConfig.RESTDB_MEDIA_BASE_URL + "media/" + Uri.encode(photoId) + "?s=w";
         GlideUrl image = new GlideUrl(url, new LazyHeaders.Builder()
                 .addHeader("x-apikey", BuildConfig.RESTDB_API_KEY).build());
         Glide.with(target).load(image).placeholder(R.drawable.ic_photo_placeholder)
