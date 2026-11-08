@@ -13,7 +13,7 @@ import pt.isep.dssmv.campuslf.data.local.entity.BuildingEntity;
 import pt.isep.dssmv.campuslf.data.local.entity.CategoryEntity;
 import pt.isep.dssmv.campuslf.data.local.entity.FoundItemEntity;
 
-/** LiveData queries are asynchronous; synchronous writes are called only on an IO scheduler. */
+// define as consultas e as alterações feitas na base de dados local
 @Dao
 public abstract class CampusDao {
     @Query("SELECT * FROM found_items_cache WHERE "
@@ -67,6 +67,7 @@ public abstract class CampusDao {
     @Query("SELECT * FROM categories")
     public abstract List<CategoryEntity> readCategories();
 
+    // grava edifícios e categorias na mesma transação
     @Transaction
     public void replaceReferences(List<BuildingEntity> buildings, List<CategoryEntity> categories) {
         clearBuildings();
@@ -75,7 +76,7 @@ public abstract class CampusDao {
         upsertCategories(categories);
     }
 
-    /** Called only after all remote pages and lookups have been received successfully. */
+    // substitui os dados apenas depois de receber a atualização completa
     @Transaction
     public void replaceSnapshot(List<FoundItemEntity> items, List<BuildingEntity> buildings,
                                 List<CategoryEntity> categories) {

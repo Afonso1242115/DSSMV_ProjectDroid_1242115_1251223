@@ -2,6 +2,7 @@ package pt.isep.dssmv.campuslf.model;
 
 import com.google.gson.annotations.SerializedName;
 
+// representa uma categoria recebida da base de dados remota
 public final class Category {
     @SerializedName("_id") private String id;
     @SerializedName(value = "name", alternate = {"category", "category_name", "nome"})

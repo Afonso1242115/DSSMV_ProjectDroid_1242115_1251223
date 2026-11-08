@@ -10,7 +10,7 @@ import pt.isep.dssmv.campuslf.model.PublishDraft;
 import pt.isep.dssmv.campuslf.model.RemoteFoundItem;
 import pt.isep.dssmv.campuslf.util.ErrorMessages;
 
-/** Sends the photo and item in one JSON document through the collection API. */
+// envia a fotografia juntamente com os restantes dados do objeto
 public final class InlinePhotoPublisher {
     private InlinePhotoPublisher() { }
 
@@ -19,8 +19,10 @@ public final class InlinePhotoPublisher {
             if (jpeg == null || jpeg.length == 0 || jpeg.length > PhotoLimits.MAX_JPEG_BYTES) {
                 return Single.error(new IOException("Photo must be a JPEG of at most 60 kB."));
             }
+            // converte os bytes da fotografia em texto para os enviar no mesmo registo
             String encoded = Base64.getEncoder().encodeToString(jpeg);
             NewFoundItem body = draft.withPhotoBase64(encoded);
+            // conta também o espaço ocupado pelos restantes campos
             int jsonBytes = RestDbJson.create().toJson(body).getBytes(StandardCharsets.UTF_8).length;
             if (jsonBytes > PhotoLimits.MAX_DOCUMENT_BYTES) {
                 return Single.error(new IOException(
@@ -37,8 +39,8 @@ public final class InlinePhotoPublisher {
                         if (encoded.equals(created.getPhotoBase64())) {
                             return Single.just(new Receipt(created, true));
                         }
-                        // Some POST responses omit fields. Read back once before confirming the photo.
-                        // A failed verification must not turn an accepted POST into a retry/duplicate.
+                        // volta a ler o objeto se a resposta não trouxer a fotografia
+                        // evita publicar outra vez um objeto que o servidor já aceitou
                         return api.getItem(created.getId()).map(stored -> {
                                     boolean confirmed = created.getId().equals(stored.getId())
                                             && encoded.equals(stored.getPhotoBase64());

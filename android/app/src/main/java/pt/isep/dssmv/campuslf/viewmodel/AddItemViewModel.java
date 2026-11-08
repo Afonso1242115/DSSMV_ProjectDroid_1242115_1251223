@@ -20,6 +20,7 @@ import pt.isep.dssmv.campuslf.model.PublishDraft;
 import pt.isep.dssmv.campuslf.model.PublishResult;
 import pt.isep.dssmv.campuslf.util.ErrorMessages;
 
+// guarda os dados do formulário e acompanha a publicação
 public final class AddItemViewModel extends AndroidViewModel {
     private final CampusRepository repository;
     private final SavedStateHandle state;
@@ -73,6 +74,7 @@ public final class AddItemViewModel extends AndroidViewModel {
                         error -> references.setValue(OperationState.error(ErrorMessages.describe(error)))));
     }
 
+    // mantém a nova fotografia e elimina a anterior quando deixa de ser necessária
     public void photoResult(boolean success) {
         String path = getText("pending_photo");
         state.remove("pending_photo");
@@ -85,6 +87,7 @@ public final class AddItemViewModel extends AndroidViewModel {
         } else file.delete();
     }
 
+    // valida o formulário e impede publicações repetidas enquanto o pedido decorre
     public void publish() {
         if (isPublishing() || published.getValue() != null) return;
         final PublishDraft draft;
@@ -105,7 +108,7 @@ public final class AddItemViewModel extends AndroidViewModel {
         publication.setValue(OperationState.running("Preparing photograph and publishing item..."));
         disposables.add(repository.publish(draft).observeOn(AndroidSchedulers.mainThread())
                 .subscribe(result -> {
-                    // Delete the original only after the server confirms the stored photo.
+                    // apaga a fotografia original apenas depois da confirmação do servidor
                     if (result.photoConfirmed) {
                         new File(draft.photoPath).delete();
                         state.remove("photo_path");
@@ -116,5 +119,6 @@ public final class AddItemViewModel extends AndroidViewModel {
                 }, error -> publication.setValue(OperationState.error(ErrorMessages.describe(error)))));
     }
 
+    // deixa de observar os pedidos quando o ViewModel é destruído
     @Override protected void onCleared() { disposables.clear(); }
 }

@@ -1,6 +1,6 @@
 package pt.isep.dssmv.campuslf.viewmodel;
 
-/** Immutable UI state; MutableLiveData stays private to each ViewModel. */
+// guarda o estado e a mensagem de cada operação do ecrã
 public final class OperationState {
     public enum Status { IDLE, RUNNING, SUCCESS, ERROR }
     public final Status status;

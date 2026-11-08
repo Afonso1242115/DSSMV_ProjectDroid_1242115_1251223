@@ -8,11 +8,12 @@ import com.google.gson.JsonObject;
 import pt.isep.dssmv.campuslf.model.Building;
 import pt.isep.dssmv.campuslf.model.Category;
 
-/** A lookup may contain embedded records or just IDs. Both forms preserve its identity. */
+// lê as relações mesmo quando o servidor devolve apenas os identificadores
 public final class RestDbJson {
     private RestDbJson() { }
 
     public static Gson create() {
+        // aceita as relações como identificadores ou como registos completos
         JsonDeserializer<Building> buildings = (json, type, context) -> {
             if (json.isJsonPrimitive()) return new Building(json.getAsString(), "", "");
             JsonObject value = json.getAsJsonObject();

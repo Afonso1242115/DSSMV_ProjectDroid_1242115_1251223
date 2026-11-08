@@ -1,6 +1,6 @@
 package pt.isep.dssmv.campuslf.model;
 
-/** Base64 expands a 60 kB JPEG to 80 kB; reserve room for the document's other fields. */
+// reserva espaço no registo para a fotografia e para os restantes dados
 public final class PhotoLimits {
     public static final int MAX_JPEG_BYTES = 60_000;
     public static final int MAX_DOCUMENT_BYTES = 90_000;

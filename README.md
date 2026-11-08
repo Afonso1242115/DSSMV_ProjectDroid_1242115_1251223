@@ -27,4 +27,4 @@ Java, Android, MVVM, Room, LiveData, Retrofit, RxJava e restdb.io.
 
 ## Documentação
 
-O relatório académico encontra-se na pasta `Documentation/`.
+O relatório académico encontra-se na pasta `documentation/`.

@@ -14,6 +14,9 @@
                       android:layout_height="wrap_content" android:text="@string/item_details"
                       android:textSize="20sp" android:fontFamily="sans-serif-medium"
                       android:textColor="@color/text_primary" />
+            <ImageView style="@style/AppBrandIcon" android:layout_width="36dp"
+                       android:layout_height="36dp" android:layout_marginStart="8dp"
+                       android:layout_marginEnd="4dp" />
             <ImageButton android:id="@+id/refreshButton" style="@style/IconButton"
                          android:src="@drawable/ic_refresh" android:contentDescription="@string/refresh" />
         </LinearLayout>

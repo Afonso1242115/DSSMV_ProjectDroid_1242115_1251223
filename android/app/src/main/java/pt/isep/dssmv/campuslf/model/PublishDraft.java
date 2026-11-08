@@ -1,9 +1,8 @@
 package pt.isep.dssmv.campuslf.model;
 
 import java.time.LocalDate;
-import java.util.Collections;
 
-/** Validated publication data. Camera and GPS values are supplied by the View. */
+// valida os dados do formulário antes de publicar
 public final class PublishDraft {
     public final String title;
     public final String description;
@@ -36,6 +35,7 @@ public final class PublishDraft {
         this.buildingId = required(buildingId, "Choose a building.");
         this.categoryId = required(categoryId, "Choose a category.");
         this.photoPath = required(photoPath, "Take a photograph before publishing.");
+        // aceita o GPS apenas quando as duas coordenadas estão presentes
         if ((latitude == null) != (longitude == null)) {
             throw new IllegalArgumentException("Both GPS coordinates must be supplied together.");
         }
@@ -54,17 +54,9 @@ public final class PublishDraft {
         return value.trim();
     }
 
-    public NewFoundItem withPhotoId(String photoId) {
-        return new NewFoundItem(title, description, detailedLocation, foundDate,
-                buildingId, categoryId, required(photoId, "The upload returned no photo ID."),
-                latitude, longitude);
-    }
-
     public NewFoundItem withPhotoBase64(String photoBase64) {
-        NewFoundItem item = new NewFoundItem(title, description, detailedLocation, foundDate,
-                buildingId, categoryId, null, latitude, longitude);
-        item.setPhotos(Collections.emptyList());
-        item.setPhotoBase64(required(photoBase64, "The photograph is empty."));
-        return item;
+        return new NewFoundItem(title, description, detailedLocation, foundDate,
+                buildingId, categoryId, required(photoBase64, "The photograph is empty."),
+                latitude, longitude);
     }
 }

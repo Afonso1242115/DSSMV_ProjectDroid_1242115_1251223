@@ -29,7 +29,7 @@ if (!restdbBaseUrl.startsWith('https://')) {
     throw new GradleException('restdb.url must use HTTPS')
 }
 
-// Media may be served on a different host without changing the working collection API.
+// endereço usado pelas fotografias antigas do arquivo de imagens
 def restdbMediaBaseUrl = restdbProperties.getProperty(
         'restdb.mediaUrl', restdbBaseUrl
 ).trim()
