@@ -9,6 +9,8 @@ import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -44,12 +46,16 @@ import pt.isep.dssmv.campuslf.viewmodel.OperationState;
 
 // liga o formulário à câmara e aos pedidos de localização
 public final class AddItemActivity extends AppCompatActivity {
+    private static final long LOCATION_TIMEOUT_MS = 20_000L;
     private AddItemViewModel viewModel;
     private Spinner buildingSpinner;
     private Spinner categorySpinner;
     private List<BuildingEntity> buildings = new ArrayList<>();
     private List<CategoryEntity> categories = new ArrayList<>();
-    private CancellationSignal locationCancellation;
+    private final Handler locationHandler = new Handler(Looper.getMainLooper());
+    private final List<CancellationSignal> locationRequests = new ArrayList<>();
+    private Runnable locationTimeout;
+    private int locationGeneration;
     private final ActivityResultLauncher<String[]> locationPermission = registerForActivityResult(
             new ActivityResultContracts.RequestMultiplePermissions(), grants -> {
                 if (hasPermission(Manifest.permission.ACCESS_FINE_LOCATION)
@@ -82,8 +88,7 @@ public final class AddItemActivity extends AppCompatActivity {
                     Manifest.permission.ACCESS_COARSE_LOCATION});
         });
         findViewById(R.id.clearGpsButton).setOnClickListener(view -> {
-            if (locationCancellation != null) locationCancellation.cancel();
-            locationCancellation = null;
+            cancelLocationRequest();
             viewModel.clearCoordinates();
         });
         viewModel.getLocationStatus().observe(this, value ->
@@ -106,9 +111,8 @@ public final class AddItemActivity extends AppCompatActivity {
         viewModel.getReferences().observe(this, state ->
                 ((TextView) findViewById(R.id.lookupStatusText)).setText(state.message));
         viewModel.getPublication().observe(this, state -> {
-            if (state.isRunning() && locationCancellation != null) {
-                locationCancellation.cancel();
-                locationCancellation = null;
+            if (state.isRunning() && !locationRequests.isEmpty()) {
+                cancelLocationRequest();
                 viewModel.locationMessage("Publishing with the location currently selected.");
             }
             ((TextView) findViewById(R.id.publishStatusText)).setText(state.message);
@@ -231,43 +235,88 @@ public final class AddItemActivity extends AppCompatActivity {
         return ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED;
     }
 
-    // pede uma localização atual usando o fornecedor disponível
+    // tenta a rede e o GPS para também conseguir localizar dentro de edifícios
     private void requestLocation() {
+        if (viewModel.isPublishing()) return;
+        cancelLocationRequest();
         LocationManager manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         if (manager == null) {
             viewModel.locationMessage("Location service unavailable. You can still use the written location.");
             return;
         }
         try {
-            String provider = hasPermission(Manifest.permission.ACCESS_FINE_LOCATION)
-                    && manager.isProviderEnabled(LocationManager.GPS_PROVIDER) ? LocationManager.GPS_PROVIDER
-                    : manager.isProviderEnabled(LocationManager.NETWORK_PROVIDER) ? LocationManager.NETWORK_PROVIDER : null;
-            if (provider == null) {
+            List<String> providers = new ArrayList<>();
+            if ((hasPermission(Manifest.permission.ACCESS_FINE_LOCATION)
+                    || hasPermission(Manifest.permission.ACCESS_COARSE_LOCATION))
+                    && manager.isProviderEnabled(LocationManager.NETWORK_PROVIDER))
+                providers.add(LocationManager.NETWORK_PROVIDER);
+            if (hasPermission(Manifest.permission.ACCESS_FINE_LOCATION)
+                    && manager.isProviderEnabled(LocationManager.GPS_PROVIDER))
+                providers.add(LocationManager.GPS_PROVIDER);
+            if (providers.isEmpty()) {
                 viewModel.locationMessage("Enable device location or continue using the written location.");
                 return;
             }
-            if (locationCancellation != null) locationCancellation.cancel();
-            locationCancellation = new CancellationSignal();
+            final int generation = locationGeneration;
+            final int[] remaining = {providers.size()};
             viewModel.locationMessage("Getting location...");
-            LocationManagerCompat.getCurrentLocation(manager, provider, locationCancellation,
-                    ContextCompat.getMainExecutor(this), location -> {
-                        locationCancellation = null;
-                        if (location == null) viewModel.locationMessage("No location received. You can still publish using the written location.");
-                        else viewModel.setCoordinates(location.getLatitude(), location.getLongitude());
-                    });
+            locationTimeout = () -> {
+                if (generation != locationGeneration) return;
+                cancelLocationRequest();
+                viewModel.locationMessage("Location timed out. Try again outdoors or use the written location.");
+            };
+            locationHandler.postDelayed(locationTimeout, LOCATION_TIMEOUT_MS);
+            for (String provider : providers) {
+                if (generation != locationGeneration) break;
+                CancellationSignal cancellation = new CancellationSignal();
+                locationRequests.add(cancellation);
+                try {
+                    LocationManagerCompat.getCurrentLocation(manager, provider, cancellation,
+                            ContextCompat.getMainExecutor(this), location -> {
+                                // ignora respostas de pedidos cancelados ou substituídos
+                                if (generation != locationGeneration) return;
+                                locationRequests.remove(cancellation);
+                                if (location != null) {
+                                    cancelLocationRequest();
+                                    viewModel.setCoordinates(location.getLatitude(), location.getLongitude());
+                                } else if (--remaining[0] == 0) {
+                                    cancelLocationRequest();
+                                    viewModel.locationMessage("No location received. Try again outdoors or use the written location.");
+                                }
+                            });
+                } catch (SecurityException | IllegalArgumentException error) {
+                    locationRequests.remove(cancellation);
+                    cancellation.cancel();
+                    if (--remaining[0] == 0 && generation == locationGeneration) {
+                        cancelLocationRequest();
+                        viewModel.locationMessage("Location unavailable. You can still use the written location.");
+                    }
+                }
+            }
         } catch (SecurityException | IllegalArgumentException error) {
-            locationCancellation = null;
+            cancelLocationRequest();
             viewModel.locationMessage("Location unavailable. You can still publish using the written location.");
         }
     }
 
+    // cancela os pedidos e o temporizador antes de aceitar outra localização
+    private void cancelLocationRequest() {
+        locationGeneration++;
+        if (locationTimeout != null) locationHandler.removeCallbacks(locationTimeout);
+        locationTimeout = null;
+        List<CancellationSignal> pending = new ArrayList<>(locationRequests);
+        locationRequests.clear();
+        for (CancellationSignal cancellation : pending) cancellation.cancel();
+    }
+
     // cancela a localização quando o ecrã deixa de estar visível
     @Override protected void onStop() {
-        if (locationCancellation != null) {
-            locationCancellation.cancel();
-            locationCancellation = null;
+        boolean wasGettingLocation = !locationRequests.isEmpty();
+        cancelLocationRequest();
+        if (wasGettingLocation) {
             viewModel.locationMessage("Location request stopped. You can request it again or use the written location.");
         }
         super.onStop();
     }
 }
+
